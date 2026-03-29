@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Secret Space ❤️</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins:wght@300;400;500;600&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LdHC50sAAAAAAyAp2Q1Hl1bsPRejj0tXVrSEZt0"></script>
     
     <style>
         :root {
@@ -172,6 +172,24 @@
             border-top: 2px solid white;
             border-radius: 50%;
             animation: spin 1s linear infinite;
+        }
+
+        .romantic-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .grecaptcha-badge { 
+            display: block !important; 
+            visibility: visible !important; 
+            position: fixed; 
+            bottom: 14px; 
+            right: 10px; 
+            z-index: 9999 !important; 
         }
 
         .heart-ornament {
@@ -1227,15 +1245,13 @@
             <div class="romantic-quote">Our Secret Sanctuary</div>
             
             <div class="input-container">
-                <input type="password" id="passInput" placeholder="••••••••" onkeypress="if(event.key==='Enter') checkPassword()" style="margin-bottom: 8px;">
+                <input type="password" id="passInput" placeholder="••••••••" onkeypress="if(event.key==='Enter') verifyAccess()" style="margin-bottom: 8px;">
             </div>
             <div id="passLockMessage" style="margin: 4px 0 8px; font-size: 0.9rem; color: var(--heart-red); display: none;"></div>
 
-            <div id="turnstile-container" class="cf-turnstile" data-sitekey="0x4AAAAAACxma-zOyUIwU6cP" data-theme="light" style="margin: 15px 0;"></div>
-
-            <button onclick="verifyAccess()" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <button id="unlockBtn" onclick="verifyAccess()" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
                 <span id="btnText">Unlock Our Space</span>
-                <span id="btnLoader" class="loader-spinner" style="display:none;"></span>
+                <span id="btnLoader" class="romantic-spinner" style="display: none;"></span>
             </button>
             
             <div class="footer-group">
@@ -1490,39 +1506,15 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Initialize Firebase App Check with custom Turnstile provider
-        const { initializeAppCheck, CustomProvider } = firebase.appCheck;
-        const appCheck = initializeAppCheck(firebase.app(), {
-            provider: new CustomProvider({
-                getToken: () => {
-                    return new Promise((resolve) => {
-                        if (turnstileToken) {
-                            resolve({
-                                token: turnstileToken,
-                                expireTimeMillis: Date.now() + 3600000 // 1 hour
-                            });
-                        } else {
-                            // If no token yet, resolve with empty or wait
-                            resolve({
-                                token: '',
-                                expireTimeMillis: Date.now() + 60000 // 1 minute
-                            });
-                        }
-                    });
-                }
-            }),
-            isTokenAutoRefreshEnabled: true
-        });
+        // Initialize Firebase App Check with reCAPTCHA v3 (using compat API)
+        firebase.appCheck().activate(
+            new firebase.appCheck.ReCaptchaV3Provider('6LdHC50sAAAAAAyAp2Q1Hl1bsPRejj0tXVrSEZt0'),
+            true
+        );
 
         // Check for existing access token
         if (sessionStorage.getItem('access_token')) {
             initApp();
-        }
-
-        let turnstileToken = null;
-
-        function onTurnstileSuccess(token) {
-            turnstileToken = token;
         }
 
         function initApp() {
@@ -1589,48 +1581,118 @@
 
         function verifyAccess() {
             const input = document.getElementById('passInput');
-            const btn = document.getElementById('unlock-btn');
+            const btn = document.getElementById('unlockBtn');
             const btnText = document.getElementById('btnText');
             const btnLoader = document.getElementById('btnLoader');
-
-            // Check if Turnstile token is available
-            if (!turnstileToken) {
-                alert('Please complete the security check first.');
-                return;
-            }
 
             // Disable button and show loading state
             btn.disabled = true;
             btnText.textContent = "Verifying...";
             btnLoader.style.display = 'inline-block';
 
-            // Fetch secret from Firebase
-            database.ref('build_revision').once('value').then(snap => {
-                const secret = snap.val();
+            // Check if grecaptcha is loaded
+            if (typeof grecaptcha === 'undefined') {
+                console.error('reCAPTCHA not loaded');
+                btnLoader.style.display = 'none';
+                btnText.textContent = "Unlock Our Space";
+                btn.disabled = false;
+                setPasswordLockMessage("Security system loading. Please try again.");
+                setTimeout(() => {
+                    clearPasswordLockMessage();
+                }, 3000);
+                return;
+            }
 
-                // Check if password matches
-                if (input.value === secret) {
-                    // Success: Store in sessionStorage and init app
-                    sessionStorage.setItem('access_token', secret);
-                    input.value = '';
-                    initApp();
-                } else {
-                    // Failure: Show error and reset after 3 seconds
-                    btnLoader.style.display = 'none';
-                    btnText.textContent = "Wrong Password";
-                    setTimeout(() => {
+            // Get reCAPTCHA v3 token
+            grecaptcha.ready(function() {
+                try {
+                    grecaptcha.execute('6LdHC50sAAAAAAyAp2Q1Hl1bsPRejj0tXVrSEZt0', {action: 'verify_access'}).then(function(token) {
+                        // Wrap Firebase fetch in try/catch to handle throttling and network errors
+                        try {
+                            // Fetch secret from Firebase
+                            database.ref('build_revision').once('value').then(snap => {
+                                const secret = snap.val();
+
+                                // Check if password matches
+                                if (input.value === secret) {
+                                    // Success: Store in sessionStorage and init app
+                                    sessionStorage.setItem('access_token', secret);
+                                    input.value = '';
+                                    clearPasswordLockMessage();
+                                    initApp();
+                                } else {
+                                    // Failure: Show error message below input and reset after 3 seconds
+                                    btnLoader.style.display = 'none';
+                                    btnText.textContent = "Unlock Our Space";
+                                    btn.disabled = false;
+                                    setPasswordLockMessage("Wrong password. Try again.");
+                                    setTimeout(() => {
+                                        clearPasswordLockMessage();
+                                    }, 3000);
+                                }
+                            }).catch(err => {
+                                console.error('Failed to fetch secret:', err);
+                                btnLoader.style.display = 'none';
+                                btnText.textContent = "Unlock Our Space";
+                                btn.disabled = false;
+                                
+                                // Handle specific Firebase errors
+                                if (err.code === 'PERMISSION_DENIED' || err.message.includes('400')) {
+                                    setPasswordLockMessage("Security Sync Error. Please refresh.");
+                                } else if (err.message.includes('Throttled')) {
+                                    setPasswordLockMessage("Server is busy. Try again shortly.");
+                                } else {
+                                    setPasswordLockMessage("Connection error. Try again.");
+                                }
+                                
+                                setTimeout(() => {
+                                    clearPasswordLockMessage();
+                                }, 3000);
+                            });
+                        } catch (fetchErr) {
+                            console.error('Fetch error:', fetchErr);
+                            btnLoader.style.display = 'none';
+                            btnText.textContent = "Unlock Our Space";
+                            btn.disabled = false;
+                            
+                            if (fetchErr.message.includes('400')) {
+                                setPasswordLockMessage("Security Sync Error. Please refresh.");
+                            } else if (fetchErr.message.includes('Throttled')) {
+                                setPasswordLockMessage("Server throttled. Try again shortly.");
+                            } else {
+                                setPasswordLockMessage("Connection error. Try again.");
+                            }
+                            
+                            setTimeout(() => {
+                                clearPasswordLockMessage();
+                            }, 3000);
+                        }
+                    }).catch(err => {
+                        console.error('reCAPTCHA execution failed:', err);
+                        btnLoader.style.display = 'none';
                         btnText.textContent = "Unlock Our Space";
                         btn.disabled = false;
-                    }, 3000);
-                }
-            }).catch(err => {
-                console.error('Failed to fetch secret:', err);
-                btnLoader.style.display = 'none';
-                btnText.textContent = "Error - Try Again";
-                setTimeout(() => {
+                        
+                        if (err.message.includes('Throttled')) {
+                            setPasswordLockMessage("Too many attempts. Please wait.");
+                        } else {
+                            setPasswordLockMessage("Security error. Try again.");
+                        }
+                        
+                        setTimeout(() => {
+                            clearPasswordLockMessage();
+                        }, 3000);
+                    });
+                } catch (execErr) {
+                    console.error('Execute error:', execErr);
+                    btnLoader.style.display = 'none';
                     btnText.textContent = "Unlock Our Space";
                     btn.disabled = false;
-                }, 3000);
+                    setPasswordLockMessage("Security system error. Try again.");
+                    setTimeout(() => {
+                        clearPasswordLockMessage();
+                    }, 3000);
+                }
             });
         }
 
