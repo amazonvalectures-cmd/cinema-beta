@@ -1,0 +1,3035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Secret Space ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins:wght@300;400;500;600&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    
+    <style>
+        :root {
+            --primary-pink: #ffafbd;
+            --deep-rose: #ffc3a0;
+            --heart-red: #ff4d6d;
+            --soft-white: rgba(255, 240, 243, 0.95);
+            --velvet-berry: rgba(100, 10, 35, 0.9);
+            --her-berry: rgba(255, 77, 109, 0.85);
+            --chat-light-bg: #fff0f3;
+            --memory-bubble-bg: #fff0f3;
+            --gold-accent: #d4af37;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary-pink), var(--deep-rose));
+        }
+
+        /* 1. LOCK SCREEN (HIGHEST PRIORITY) */
+        #setup-area {
+            position: fixed; top:0; left:0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(255,255,255,0.8), rgba(255,255,255,0.8)), url('https://www.transparenttextures.com/patterns/cuis-hearts.png');
+            z-index: 999999999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        #lock-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000000000;
+            background: linear-gradient(135deg, var(--primary-pink), var(--deep-rose));
+        }
+
+        .bg-heart {
+            position: absolute; color: rgba(255, 255, 255, 0.5);
+            font-size: 1.5rem; pointer-events: none;
+            animation: floatUp 7s linear infinite;
+            bottom: -50px;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Set-up Loader inside Connect-to-Me box */
+        #setup-loading {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding: 30px;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .setup-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 77, 109, 0.2);
+            border-top: 4px solid var(--heart-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .sync-text {
+            font-family: 'Dancing Script', cursive;
+            color: var(--heart-red);
+            font-size: 1.5rem;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        #setup-area {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-pink), var(--deep-rose));
+            overflow: hidden;
+            z-index: 999999999;
+        }
+
+        #setup-bg-elements {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+            background: linear-gradient(135deg, var(--primary-pink), var(--deep-rose));
+        }
+
+        #setup-bg-elements::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('https://www.transparenttextures.com/patterns/cuis-hearts.png');
+            opacity: 0.22;
+            pointer-events: none;
+        }
+
+        #setup-bg-elements div {
+            position: absolute;
+            bottom: -40px;
+            font-size: 22px;
+            color: var(--heart-red);
+            opacity: 0.85;
+            user-select: none;
+            pointer-events: none;
+            animation: setupHeartLift 5s linear forwards;
+            text-shadow: 0 0 7px rgba(255,255,255,0.8), 0 0 15px rgba(255,77,109,0.4);
+        }
+
+        @keyframes setupHeartLift {
+            0% { transform: translateY(0) scale(0.6); opacity: 0.4; }
+            100% { transform: translateY(-140vh) scale(1.2); opacity: 0; }
+        }
+
+        .setup-box {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 45px 35px;
+            border-radius: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            width: 392px; /* Adjusted for 320px input width */
+            border: 1px solid white;
+            position: relative;
+            z-index: 10;
+            /* CRITICAL FIX: Forces everything inside to center horizontally */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .setup-box.loading {
+            background: rgba(255, 255, 255, 1);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+        .setup-box.loading .romantic-title,
+        .setup-box.loading #nameInput,
+        .setup-box.loading #roomInput,
+        .setup-box.loading button {
+            display: none;
+        }
+
+        .romantic-title { font-family: 'Dancing Script', cursive; font-size: 2.3rem; color: var(--heart-red); margin-bottom: 15px; font-weight: 700; }
+        input { width: 100%; padding: 12px; border: 2px solid var(--primary-pink); border-radius: 15px; outline: none; font-family: 'Poppins', sans-serif; text-align: left; font-size: 1rem; transition: 0.3s; color: #444; background: white; margin-bottom: 15px; }
+        input:focus { border-color: var(--heart-red); box-shadow: 0 0 10px rgba(255, 77, 109, 0.1); }
+        button { background: var(--heart-red); color: white; border: none; padding: 14px; border-radius: 15px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.3s; font-family: 'Poppins', sans-serif; box-shadow: 0 8px 15px rgba(255, 77, 109, 0.2); display: flex; align-items: center; justify-content: center; gap: 10px; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 12px 20px rgba(255, 77, 109, 0.3); }
+
+        .loader-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .heart-ornament {
+            color: var(--heart-red);
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            animation: pulse-heart 2s infinite;
+        }
+
+        @keyframes pulse-heart {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .romantic-quote {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #bbb;
+            margin-bottom: 35px;
+            font-weight: 500;
+        }
+
+        /* 3. CENTERED PASSWORD INPUT FIELD */
+        .input-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 0;
+        }
+
+        /* Footer Text */
+        .footer-group {
+            margin-top: 25px;
+        }
+
+        .private-text {
+            font-size: 0.6rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 2px;
+        }
+
+        .only-us {
+            font-family: 'Dancing Script', cursive;
+            color: var(--heart-red);
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+        #main-content {
+            display: none; width: 100vw; height: 100vh; padding: 15px;
+            display: grid; 
+            grid-template-columns: 350px 1fr; /* Default State */
+            grid-template-rows: 100%; gap: 15px;
+            transition: grid-template-columns 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Class to collapse chat */
+        #main-content.chat-hidden {
+            grid-template-columns: 0px 1fr;
+            gap: 0;
+        }
+
+        /* 3. LEFT SIDE: CHAT AREA */
+        #chat-container-wrapper {
+            position: relative;
+            height: 100%;
+            min-width: 0; /* Important for grid collapse */
+            display: flex;
+        }
+
+        #chat-container { 
+            width: 350px; /* Fixed width content */
+            background-color: var(--chat-light-bg);
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 20c0-2 2-4 4-4s4 2 4 4-4 6-8 10c-4-4-8-8-8-10s2-4 4-4 4 2 4 4zM50 70c0-1 1-2 2-2s2 1 2 2-2 3-4 5c-2-2-4-4-4-5s1-2 2-2 2 1 2 2zM80 30c0-1.5 1.5-3 3-3s3 1.5 3 3-3 4.5-6 7.5c-3-3-6-6-6-7.5s1.5-3 3-3 3 1.5 3 3zM25 85c0-1 1-2 2-2s2 1 2 2-2 3-4 5c-2-2-4-4-4-5s1-2 2-2 2 1 2 2zM90 80c0-1 1-2 2-2s2 1 2 2-2 3-4 5c-2-2-4-4-4-5s1-2 2-2 2 1 2 2z' fill='%23ffb3c1' fill-opacity='0.5'/%3E%3C/svg%3E");
+            background-size: 120px; border-radius: 25px; display: flex; flex-direction: column; border: 4px solid white; height: 100%; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: transform 0.5s ease, opacity 0.4s ease;
+        }
+        
+        /* Hide content when collapsed */
+        #main-content.chat-hidden #chat-container {
+            transform: translateX(-110%);
+            opacity: 0;
+        }
+
+        #chat-header { height: 60px; display: flex; align-items: center; justify-content: center; background: white; font-family: 'Dancing Script'; font-size: 1.5rem; color: var(--heart-red); border-bottom: 1px solid #eee; flex-shrink: 0; }
+        #chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+        .msg { position: relative; font-family: 'Poppins', sans-serif; padding: 12px 15px 26px; border-radius: 18px; font-size: 0.85rem; max-width: 85%; min-width: 70px; overflow-wrap: break-word; line-height: 1.4; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .msg.me { align-self: flex-end; background: var(--heart-red); color: white; border-bottom-right-radius: 2px; }
+        .msg.them { align-self: flex-start; background: white; color: #444; border-bottom-left-radius: 2px; border: 1px solid #ffe1e6; }
+
+        .msg-time { position: absolute; right: 10px; bottom: 6px; font-size: 0.68rem; line-height: 1; opacity: 0.95; }
+        .msg.me .msg-time { color: #ffe1ec; text-shadow: 0 0 3px rgba(0,0,0,0.3); }
+        .msg.them .msg-time { color: #888; }
+
+        .date-separator {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #666;
+            margin: 10px 0;
+            font-weight: 500;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        #typing-indicator { 
+            height: 25px; padding: 0 15px; 
+            font-size: 0.7rem; color: var(--heart-red); font-style: italic; 
+            display: flex; align-items: center; font-weight: 600; flex-shrink: 0; 
+            font-family: 'Poppins', sans-serif; 
+            opacity: 0; transition: opacity 0.5s ease;
+        }
+        
+        #chat-input-area { height: 80px; padding: 0 15px; background: white; border-top: 1px solid #eee; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .input-wrapper {
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            height: 48px;
+        }
+
+        #chatInput {
+            flex: 1;
+            height: 48px;
+            padding: 0 20px;
+            border-radius: 25px;
+            border: 1px solid #ddd;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            margin: 0;
+            line-height: 48px;
+        }
+        #sendBtn { width: 48px; height: 48px; background: var(--heart-red); border: none; border-radius: 50%; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; transition: 0.3s; flex-shrink: 0; margin: 0; padding: 0; }
+
+        /* TOGGLE BUTTON */
+        #chat-toggle {
+            position: absolute; top: 50%; right: 0; transform: translateY(-50%) translateX(50%);
+            width: 20px; height: 50px; background: var(--heart-red); border: 2px solid white;
+            border-radius: 50px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 10004; box-shadow: 0 0 15px var(--heart-red);
+            transition: all 0.3s ease; color: white; font-size: 12px; animation: pulseGlow 3s infinite; font-family: 'Poppins', sans-serif; font-weight: 600;
+        }
+        @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 10px var(--heart-red); } 50% { box-shadow: 0 0 20px #ff9aa2, 0 0 5px white; } }
+        #main-content.chat-hidden #chat-toggle { position: fixed; left: 0; right: auto; transform: translateY(-50%); border-radius: 0 12px 12px 0; height: 60px; width: 24px; }
+        #chat-toggle:hover { filter: brightness(1.2); transform: translateY(-50%) translateX(50%) scale(1.1); }
+        #main-content.chat-hidden #chat-toggle:hover { transform: translateY(-50%) scale(1.1); }
+
+        /* THEATER */
+        #theater-side { display: flex; flex-direction: column; height: 100%; gap: 8px; min-width: 0; padding-left: 0; transition: padding-left 0.5s ease; }
+        #main-content.chat-hidden #theater-side { padding-left: 20px; }
+        #top-info { height: 40px; display: flex; justify-content: space-between; align-items: center; color: white; font-family: 'Dancing Script'; font-size: 1.8rem; padding: 0 10px; flex-shrink: 0; }
+        
+        #status-text { 
+            font-family: 'Dancing Script', cursive; font-size: 1.8rem; font-weight: 600; color: white; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8), 0 0 10px var(--heart-red), 0 0 20px var(--heart-red);
+            animation: glowStar 3s ease-in-out infinite; letter-spacing: 1px;
+        }
+        @keyframes glowStar { 0%, 100% { opacity: 0.85; text-shadow: 0 2px 4px rgba(0,0,0,0.8), 0 0 10px var(--heart-red); } 50% { opacity: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.8), 0 0 20px white, 0 0 40px #ff9aa2; } }
+
+        #cinema-wrapper { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; position: relative; }
+        
+        /* CURSOR HIDING */
+        #video-container { 
+            flex: 1; background: #000; border-radius: 25px; overflow: hidden; 
+            border: 4px solid var(--velvet-berry); position: relative; min-height: 0; 
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            cursor: default; 
+        }
+        #video-container.hide-cursor { cursor: none; } 
+        
+        video#main-video { width: 100%; height: 100%; object-fit: contain; }
+
+        #subtitle-ghost { position: absolute; bottom: 12%; left: 5%; right: 5%; text-align: center; pointer-events: none; z-index: 2147483647; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; min-height: 50px; }
+        #subtitle-ghost span { background: rgba(0, 0, 0, 0.7); color: #fff; font-family: 'Poppins', sans-serif; font-size: clamp(14px, 2.2vw, 24px); padding: 6px 14px; border-radius: 6px; line-height: 1.4; text-shadow: 1px 1px 3px black; white-space: pre-wrap; }
+
+        /* FULLSCREEN TYPING INDICATOR */
+        #fs-typing-indicator {
+            position: absolute; top: 40px; left: 25px;
+            background: rgba(100, 10, 35, 0.7); border: 1px solid rgba(255, 77, 109, 0.4);
+            color: white; padding: 8px 18px; border-radius: 30px;
+            font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 500;
+            pointer-events: none; z-index: 10012;
+            backdrop-filter: blur(5px); box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: flex; opacity: 0; transform: translateY(-10px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            align-items: center; gap: 8px;
+        }
+        #fs-typing-indicator.visible { opacity: 1; transform: translateY(0); }
+        #cinema-wrapper:not(:fullscreen) #fs-typing-indicator { display: none; }
+        body:has(#main-content.chat-hidden) #fs-typing-indicator { display: flex !important; }
+
+        /* FULLSCREEN MESSAGE POPUP */
+        #fs-message-popup {
+            position: absolute; top: 60px; right: 30px;
+            max-width: 40%; background: rgba(100, 10, 35, 0.85);
+            color: white; padding: 12px 18px;
+            border-radius: 18px 0 18px 18px;
+            border: 1px solid rgba(255, 77, 109, 0.5);
+            font-family: 'Poppins', sans-serif; font-size: 0.95rem; line-height: 1.4;
+            z-index: 10014; backdrop-filter: blur(6px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            display: none; opacity: 0; transform: translateX(20px);
+            transition: all 0.5s ease;
+            white-space: normal; overflow-wrap: break-word;
+        }
+        #fs-message-popup.visible { display: block; opacity: 1; transform: translateX(0); }
+
+        #presence-alert {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: var(--velvet-berry); color: white;
+            padding: 12px 28px; border-radius: 50px;
+            font-family: 'Dancing Script', cursive; font-size: 1.2rem; font-weight: 700;
+            border: 2px solid var(--heart-red); box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 3000000001; opacity: 0; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none; text-align: center; white-space: wrap; min-width: 300px;
+            backdrop-filter: blur(4px); letter-spacing: 0.5px;
+        }
+        #presence-alert.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        .state-overlay { position: absolute; top:0; left:0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; backdrop-filter: blur(10px); }
+        #video-loader { background: rgba(15, 0, 5, 0.95); display: none; z-index: 10030; }
+        .spinner { width: 60px; height: 60px; border: 4px solid rgba(255, 77, 109, 0.2); border-top: 4px solid var(--heart-red); border-radius: 50%; animation: spin 1s linear infinite; box-shadow: 0 0 25px var(--heart-red); }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #empty-state { background: rgba(20, 0, 10, 0.9); display: none; z-index: 10008; }
+        .empty-heart { font-size: 4rem; animation: heartbeat 2s infinite; margin-bottom: 20px; color: var(--heart-red); }
+        .empty-text { font-family: 'Dancing Script'; font-size: 1.8rem; color: #ffc3a0; }
+        #ready-state { background: rgba(0,0,0,0.4); display: none; pointer-events: none; z-index: 10025; }
+        .ready-text { font-family: 'Dancing Script'; font-size: 2.5rem; color: white; text-shadow: 0 0 20px var(--heart-red); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* CONTROLS - Auto Hide Logic */
+        .video-controls { 
+            position: absolute; bottom: 0; left: 0; right: 0; 
+            background: linear-gradient(transparent, rgba(0,0,0,0.9)); 
+            padding: 15px 25px 25px; 
+            display: flex; flex-direction: column; gap: 10px; 
+            opacity: 0; transition: opacity 0.5s ease;
+            z-index: 10020; pointer-events: auto; 
+        }
+        
+        #video-container.show-controls .video-controls { opacity: 1; }
+
+        .progress-area { width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 10px; cursor: pointer; position: relative; transition: height 0.1s; }
+        .progress-area:hover { height: 10px; }
+        .progress-bar { height: 100%; background: var(--heart-red); border-radius: 10px; width: 0%; position: absolute; left:0; top:0; z-index: 2; box-shadow: 0 0 10px var(--heart-red); pointer-events: none; }
+        .progress-bar::after { content: ''; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; background: white; border-radius: 50%; opacity: 0; transition: opacity 0.2s; }
+        .progress-area:hover .progress-bar::after { opacity: 1; }
+
+        .controls-main { display: flex; align-items: center; gap: 20px; color: white; }
+        .right-controls { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+        .play-pause { cursor: pointer; width: 50px; height: 50px; background: var(--heart-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; border: none; padding: 0; }
+        .play-pause:hover { transform: scale(1.1); }
+        .play-pause svg { width: 28px; height: 28px; fill: white; transform: translateX(1px); }
+        .time-display { font-size: 0.85rem; font-weight: 500; font-family: 'Poppins', sans-serif; min-width: 100px; }
+        .seek-btn-svg { width: 30px; height: 30px; cursor: pointer; opacity: 0.85; transition: 0.2s; fill: white; margin: 0 2px; }
+        
+        /* UPDATED ICONS: LARGER AND BOLDER */
+        .control-icon-btn {
+            background: none; border: none; cursor: pointer; padding: 0;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s; opacity: 0.85;
+        }
+        .control-icon-btn:hover { transform: scale(1.1); opacity: 1; }
+        .control-icon-btn svg { fill: white; width: 30px; height: 30px; filter: drop-shadow(0 0 2px rgba(0,0,0,0.5)); }
+
+        /* Alias used by the player controls */
+        .player-btn {
+            background: none; border: none; cursor: pointer; padding: 0;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s; opacity: 0.85;
+            color: white;
+        }
+        .player-btn:hover { transform: scale(1.1); opacity: 1; }
+        .player-btn svg { fill: currentColor; width: 20px; height: 20px; filter: none; }
+
+        .control-icon-btn svg, .player-btn svg, .seek-overlay svg, .svg-icon-btn svg { filter: none !important; }
+
+        #playback-ripple {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%) scale(0.5);
+            opacity: 0;
+            z-index: 10020;
+            background: rgba(255, 77, 109, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #playback-ripple svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        #playback-ripple.active {
+            animation: playbackRipple 0.7s ease-out forwards;
+        }
+
+        @keyframes playbackRipple {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1.0; }
+            100% { transform: translate(-50%, -50%) scale(2.0); opacity: 0; }
+        }
+
+        #whisper-overlay { position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(15px); padding: 15px; border-radius: 25px; border: 2px solid rgba(255,255,255,0.5); z-index: 10035; display: none; box-shadow: 0 10px 40px rgba(0,0,0,0.5); pointer-events: auto; }
+        #whisperInput { background: white; border: none; padding: 10px 20px; border-radius: 20px; width: 100%; outline: none; font-family: 'Poppins', sans-serif; }
+
+        .seek-overlay { position: absolute; top: 0; height: 100%; width: 35%; background: radial-gradient(circle at center, rgba(0,0,0,0.5) 0%, transparent 75%); display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; pointer-events: none; color: white; z-index: 10007; text-shadow: 0 0 15px rgba(0,0,0,1); }
+        #seek-left { left: 0; border-radius: 25px 0 0 25px; }
+        #seek-right { right: 0; border-radius: 0 25px 25px 0; }
+        .seek-overlay svg { width: 65px; height: 65px; fill: white; filter: drop-shadow(0 0 10px rgba(0,0,0,0.8)); }
+        .seek-overlay b { font-size: 1.1rem; font-family: 'Poppins'; font-weight: 600; margin-top: 5px; }
+        .seek-animate { animation: seekRipple 0.7s ease-out; }
+        @keyframes seekRipple { 0% { opacity: 0; transform: scale(0.9); } 30% { opacity: 1; } 100% { opacity: 0; transform: scale(1.1); } }
+
+        #whisper-notif { position: absolute; top: 20px; right: 20px; width: 280px; background: var(--velvet-berry); color: white; padding: 12px 20px; border-radius: 20px; border: 2px solid white; font-size: 0.85rem; z-index: 10009; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.4); overflow-wrap: break-word; line-height: 1.4; font-family: 'Poppins', sans-serif; }
+        .slide-in { animation: slideInRight 0.5s ease-out forwards; }
+        .slide-out { animation: slideOutRight 0.5s ease-in forwards; }
+        @keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
+        .petal { position: absolute; border-radius: 150% 0 150% 0; width: 15px; height: 15px; pointer-events: none; z-index: 10002; animation: petalFall linear forwards; }
+        @keyframes petalFall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
+
+        .reaction-bar { min-height: 70px; background: var(--velvet-berry); border-radius: 40px; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 6px; border: 2px solid white; flex-wrap: nowrap; padding: 5px 12px; flex-shrink: 0; z-index: 100; font-family: 'Poppins', 'Noto Color Emoji', sans-serif; }
+        .react-btn { font-size: 1.4rem; cursor: pointer; transition: 0.2s; user-select: none; font-family: 'Noto Color Emoji', sans-serif; }
+        .react-btn:hover { transform: scale(1.3); }
+        .special-btn { width: auto; background: white; color: var(--heart-red); padding: 7px 15px; font-size: 0.7rem; border-radius: 10px; font-weight: 600; border: none; cursor: pointer; transition: 0.3s; font-family: 'Poppins', 'Noto Color Emoji', sans-serif; white-space: nowrap; }
+
+        /* SVG Icon Separator */
+        .reaction-bar-separator {
+            width: 3px; height: 20px; background: rgba(255, 255, 255, 0.85);
+            margin: 0 2px; border-radius: 2px;
+        }
+
+        /* SVG Icon Wrapper */
+        .svg-icon-wrapper {
+            display: flex; gap: 6px; align-items: center;
+        }
+
+        /* SVG Icon Button */
+        .svg-icon-btn {
+            position: relative; cursor: pointer; padding: 6px;
+            background: none; border: none; display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s ease, filter 0.2s ease;
+            box-shadow: none; /* remove glow */
+        }
+
+        .svg-icon-btn:hover {
+            transform: scale(1.15);
+            box-shadow: none;
+        }
+
+        .svg-icon-btn svg {
+            width: 1.4rem; height: 1.4rem;
+            fill: var(--heart-red); stroke: var(--heart-red); filter: none;
+        }
+
+        .svg-icon-btn[data-tooltip="Save video state"] svg,
+        .svg-icon-btn[data-tooltip="Save movie state"] svg {
+            stroke: var(--heart-red);
+            fill: var(--heart-red);
+            stroke-width: 1.5;
+        }
+
+        /* Save movie state icon */
+        .svg-icon-btn[data-tooltip="Save video state"] svg {
+            stroke: var(--heart-red);
+            stroke-width: 1.5;
+        }
+
+        /* Tooltip Styling */
+        .svg-icon-btn::after {
+            content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%;
+            transform: translateX(-50%) translateY(-8px);
+            background: var(--heart-red); color: white; padding: 6px 10px;
+            border-radius: 18px; font-family: 'Poppins', sans-serif; font-size: 0.65rem;
+            font-weight: 600; white-space: nowrap; z-index: 100000;
+            opacity: 0; pointer-events: none; transition: opacity 0.24s ease, transform 0.24s ease;
+            box-shadow: 0 4px 12px rgba(255, 77, 109, 0.4), 0 0 15px rgba(255, 77, 109, 0.2);
+            letter-spacing: 0.3px;
+        }
+
+        .svg-icon-btn:hover::after {
+            opacity: 1; transform: translateX(-50%) translateY(-12px);
+        }
+
+        /* Save state animated pop-up */
+        .save-state-notif {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.96);
+            background: rgba(100, 10, 35, 1.0); color: white;
+            border: 1px solid rgba(255, 77, 109, 0.4);
+            border-radius: 18px; padding: 12px 18px;
+            font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35); z-index: 10120;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.35s ease, transform 0.35s ease;
+        }
+
+        .save-state-notif.visible {
+            opacity: 1; transform: translate(-50%, -50%) scale(1);
+        }
+
+        .reaction-popup { position: absolute; bottom: 15%; display: flex; flex-direction: row; align-items: center; padding: 8px 25px; border-radius: 50px; border: 2px solid var(--heart-red); pointer-events: none; z-index: 10015; box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: androidFloat 3.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; backdrop-filter: blur(4px); gap: 12px; font-family: 'Poppins', 'Noto Color Emoji', sans-serif; }
+        .reaction-popup.me-pill { background: var(--velvet-berry); border-color: var(--heart-red); }
+        .reaction-popup.them-pill { background: var(--her-berry); border-color: var(--heart-red); }
+        .inner-content { display: flex; flex-direction: row; align-items: center; gap: 12px; }
+        .sender-tag { font-size: 0.55rem; color: rgba(255,255,255,0.7); font-weight: 800; position: absolute; top: 8px; left: 50%; transform: translateX(-50%); white-space: nowrap; font-family: 'Poppins'; text-transform: uppercase; }
+        .reaction-emoji { font-size: 2.5rem; display: inline-block; margin-top: 5px; font-family: 'Noto Color Emoji', sans-serif;} 
+        .reaction-text { color: white; font-size: 1.2rem; font-weight: 600; white-space: nowrap; font-family: 'Poppins', sans-serif; margin-top: 5px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);}
+
+        #esc-hint { position: absolute; top: 40px; left: 50%; transform: translate(-50%, -50%); color: white; font-family: 'Poppins', sans-serif; text-transform: uppercase; font-weight: 600; font-size: 0.75rem; letter-spacing: 3px; background: rgba(0, 0, 0, 0.6); padding: 12px 35px; border-radius: 50px; border: 2.5px solid white; text-shadow: 0 2px 4px rgba(0,0,0,0.8); opacity: 0; pointer-events: none; transition: 1.2s; z-index: 1000; white-space: nowrap; backdrop-filter: blur(5px); }
+        #cinema-wrapper:fullscreen #esc-hint { opacity: 1; animation: fadeOutHint 6s forwards; }
+
+        @keyframes androidFloat { 0% { transform: translateY(50px) scale(0.7); opacity: 0; } 15% { transform: translateY(0) scale(1); opacity: 1; } 85% { opacity: 1; } 100% { transform: translateY(-350px) scale(0.9); opacity: 0; } }
+        .ani-pulse { animation: androidHeartbeat 0.8s infinite; } .ani-bounce { animation: androidBounce 0.6s infinite; } .ani-shiver { animation: androidShiver 0.4s infinite; } .ani-pop { animation: androidPop 0.6s infinite; }
+        @keyframes heartbeat { 0% { transform: scale(1); } 14% { transform: scale(1.1); } 28% { transform: scale(1); } 42% { transform: scale(1.1); } 70% { transform: scale(1); } }
+        @keyframes fadeOutHint { 0%, 85% { opacity: 1; } 100% { opacity: 0; } }
+
+        /* ROMANTIC MOVIE SELECTION MODAL (from important.html) */
+        #romantic-movie-modal {
+            position: fixed; inset: 0;
+            display: none;
+            align-items: center; justify-content: center;
+            z-index: 1000000000;
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+        }
+
+        #romantic-movie-modal .romantic-modal-container {
+            width: 95%;
+            max-width: 500px;
+            background: var(--soft-white);
+            backdrop-filter: blur(15px);
+            border-radius: 40px;
+            padding: 35px;
+            box-shadow: 0 20px 60px rgba(100, 10, 35, 0.2);
+            text-align: center;
+            border: 2px solid white;
+            display: flex;
+            flex-direction: column;
+            max-height: 85vh;
+            overflow: hidden;
+            font-family: 'Poppins', 'Noto Color Emoji', sans-serif;
+            position: relative;
+        }
+
+        .romantic-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: var(--her-berry);
+            font-size: 32px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s ease;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        .romantic-modal-close:hover {
+            transform: scale(1.15);
+            opacity: 0.8;
+        }
+
+        .romantic-modal-close:active {
+            transform: scale(0.95);
+        }
+
+        #romantic-movie-modal .romantic-title {
+            font-family: 'Dancing Script', cursive;
+            color: var(--heart-red);
+            font-size: 42px;
+            margin-bottom: 0px;
+        }
+        #romantic-movie-modal .romantic-subtitle {
+            font-family: 'Dancing Script', cursive;
+            color: var(--velvet-berry);
+            font-size: 22px;
+            margin: 0 0 20px;
+            opacity: 0.9;
+        }
+
+        #romantic-movie-modal #loading-section { padding: 40px 0 10px; }
+
+        #romantic-movie-modal .heart-scanner-container {
+            position: relative;
+            width: 80px; height: 80px;
+            margin: 0 auto 30px;
+        }
+        #romantic-movie-modal .heart-loader {
+            width: 50px; height: 50px;
+            background-color: var(--heart-red);
+            position: absolute;
+            top: 15px; left: 15px;
+            transform: rotate(45deg);
+            animation: romanticHeartbeat 1.2s infinite;
+        }
+        #romantic-movie-modal .heart-loader::before,
+        #romantic-movie-modal .heart-loader::after {
+            content: "";
+            width: 50px; height: 50px;
+            background-color: var(--heart-red);
+            border-radius: 50%;
+            position: absolute;
+        }
+        #romantic-movie-modal .heart-loader::before { top: -25px; left: 0; }
+        #romantic-movie-modal .heart-loader::after { left: -25px; top: 0; }
+
+        #romantic-movie-modal .scanning-laser {
+            position: absolute;
+            width: 100px; height: 3px;
+            background: white;
+            top: 50%; left: -10px;
+            box-shadow: 0 0 15px var(--heart-red), 0 0 5px white;
+            animation: romanticScanMove 2s infinite ease-in-out;
+            z-index: 2;
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        @keyframes romanticHeartbeat {
+            0%, 100% { transform: rotate(45deg) scale(0.85); }
+            50% { transform: rotate(45deg) scale(1.05); }
+        }
+
+        @keyframes romanticScanMove {
+            0% { top: -10px; opacity: 0; }
+            50% { opacity: 1; }
+            100% { top: 90px; opacity: 0; }
+        }
+
+        #romantic-movie-modal #search-wrapper {
+            display: none;
+            margin-bottom: 20px;
+            animation: romanticFadeIn 1s ease;
+        }
+
+        #romantic-movie-modal .search-bar {
+            width: 100%;
+            padding: 14px 25px;
+            border-radius: 50px;
+            border: 2px solid var(--primary-pink);
+            background: white;
+            outline: none;
+            color: var(--velvet-berry);
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(255, 175, 189, 0.2);
+            transition: border-color 0.3s;
+        }
+        #romantic-movie-modal .search-input-with-icon {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 48px;
+            box-sizing: border-box;
+            border: 2px solid var(--primary-pink);
+            background: white;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(255, 175, 189, 0.2);
+            transition: border-color 0.3s;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+        #romantic-movie-modal .search-input-with-icon:focus-within {
+            border-color: var(--heart-red);
+        }
+
+        #romantic-movie-modal #movie-search {
+            border: none;
+            box-shadow: none;
+            background: transparent;
+            outline: none;
+            padding: 0;
+            margin: 0;
+            height: 48px;
+            line-height: 48px;
+            flex: 1;
+            box-sizing: border-box;
+        }
+
+        #romantic-movie-modal #private-link-toggle {
+            position: static;
+            right: auto;
+            top: auto;
+            transform: none;
+            color: var(--heart-red);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid var(--heart-red);
+            background: transparent;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        #romantic-movie-modal #private-link-toggle svg {
+            width: 18px;
+            height: 18px;
+            flex: none;
+        }
+
+        #romantic-movie-modal .private-link-input-with-icon {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 48px;
+            box-sizing: border-box;
+            border: 2px solid var(--primary-pink);
+            background: white;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(255, 175, 189, 0.2);
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        #romantic-movie-modal #private-link-input::placeholder {
+            text-align: left;
+        }
+
+        #romantic-movie-modal #private-link-area #private-link-play-btn {
+            width: 32px;
+            height: 32px;
+            background: transparent;
+            border: none;
+            color: var(--heart-red);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin-left: 10px;
+        }
+
+        #romantic-movie-modal #private-link-area #private-link-play-btn svg {
+            width: 18px;
+            height: 18px;
+            flex: none;
+        }
+
+        #romantic-movie-modal #continue-our-moment-btn {
+            width: fit-content;
+            max-width: 100%;
+            display: inline-flex;
+            padding-left: 22px;
+            padding-right: 22px;
+            justify-content: center;
+            align-self: center;
+            margin-top: 8px;
+            transform: translateY(6px);
+        }
+
+        @keyframes romanticFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        #romantic-movie-modal #movie-list {
+            display: none;
+            text-align: left;
+            overflow-y: auto;
+            padding-right: 10px;
+            flex-grow: 1;
+        }
+
+        #passInput {
+            text-align: center;
+        }
+
+        #romantic-movie-modal #movie-list::-webkit-scrollbar { width: 6px; }
+        #romantic-movie-modal #movie-list::-webkit-scrollbar-track { background: transparent; }
+        #romantic-movie-modal #movie-list::-webkit-scrollbar-thumb { background: var(--primary-pink); border-radius: 10px; }
+        #romantic-movie-modal #movie-list::-webkit-scrollbar-thumb:hover { background: var(--heart-red); }
+
+        #romantic-movie-modal .romantic-movie-card {
+            background: white;
+            border: 1px solid var(--chat-light-bg);
+            padding: 18px;
+            border-radius: 18px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            animation: romanticFadeInCard 0.5s ease forwards;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        #romantic-movie-modal .romantic-movie-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--heart-red);
+            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.1);
+        }
+
+        #romantic-movie-modal .romantic-movie-icon { margin-right: 15px; font-size: 22px; }
+        #romantic-movie-modal .romantic-movie-title {
+            color: var(--velvet-berry);
+            font-weight: 500;
+            font-size: 14px;
+            word-break: break-all;
+        }
+
+        @keyframes romanticFadeInCard {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #romantic-movie-modal #romantic-modal-footer {
+            margin-top: 16px;
+        }
+
+        /* MEMORY FEATURE CSS (from shared-memory.html) */
+        /* OVERLAYS */
+        .full-overlay { position: fixed; inset: 0; z-index: 999999; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--primary-pink), var(--deep-rose)); }
+        .modal-overlay { position: fixed; inset: 0; z-index: 1000000; display: none; align-items: center; justify-content: center; background: rgba(40, 5, 15, 1); backdrop-filter: blur(12px); overflow: hidden; }
+
+        /* ZOOM PREVIEW */
+        #zoom-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 175, 189, 0.4);
+            backdrop-filter: blur(15px);
+            cursor: zoom-out;
+        }
+
+        #zoom-overlay img {
+            max-width: 85%;
+            max-height: 80vh;
+            border: 10px solid white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        /* SCRAPBOOK OVERLAY */
+
+        /* MEMORY MODAL */
+        #memory-modal { position: fixed; inset: 0; z-index: 1000000; display: none; align-items: center; justify-content: center; background: rgba(40, 5, 15, 0.9); backdrop-filter: blur(12px); overflow: hidden; }
+        #memory-modal .glass-box { background: rgba(255, 255, 255, 0.98); padding: 35px; border-radius: 35px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); width: 100%; max-width: 480px; text-align: center; border: 2px solid white; position: relative; z-index: 10; }
+        #memory-modal input[type="text"] {
+        width: 100%;
+        padding: 12px 18px;
+        border: 2px solid var(--primary-pink);
+        border-radius: 15px;
+        outline: none;
+        margin-bottom: 15px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 1rem;
+        transition: 0.3s;
+        color: #444;
+        background: white;
+    }
+
+    #memory-modal input[type="text"]:focus {
+        border-color: var(--heart-red) !important;
+        box-shadow: 0 0 12px rgba(255, 77, 109, 0.45) !important;
+    }
+
+        #preview-list {
+            max-height: 220px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding: 5px;
+        }
+
+        .preview-item {
+            display: flex;
+            gap: 10px;
+            background: #fff;
+            padding: 10px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ffe4e9;
+            align-items: center;
+            position: relative;
+            overflow: visible;
+        }
+
+        .preview-item img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            cursor: zoom-in;
+}
+
+.preview-item textarea {
+            flex: 1;
+            height: 60px;
+            padding: 8px;
+            border-radius: 8px;
+            border: 2px solid var(--primary-pink);
+            font-size: 0.8rem;
+            resize: none;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+
+        .preview-item textarea:focus {
+            border-color: var(--heart-red) !important;
+            box-shadow: 0 0 12px rgba(255, 77, 109, 0.45) !important;
+            outline: none;
+        }
+
+        /* Delete Button Position Fix */
+        .del-photo {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            background: var(--heart-red);
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid white;
+            font-weight: bold;
+            z-index: 20;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .upload-zone {
+    border: 2px dashed var(--primary-pink);
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    background: #fffafb;
+    transition: 0.3s;
+}
+
+.upload-zone:hover {
+    background: #fff0f3;
+    border-color: var(--heart-red);
+}
+        /* THE MEMORY CHAT BUBBLE */
+        .msg.memory-letter {
+            background: var(--memory-bubble-bg) !important;
+            border: 2px solid var(--heart-red) !important;
+            cursor: pointer;
+            text-align: center;
+            padding: 20px 15px !important;
+            transition: box-shadow 0.3s ease;
+            min-width: 180px;
+        }
+
+        /* Glow Hover Effect */
+        .msg.memory-letter:hover {
+            box-shadow: 0 0 20px rgba(255, 77, 109, 0.6);
+        }
+
+        .msg.memory-letter .wax-seal {
+            font-size: 2.2rem;
+            display: block;
+            margin-bottom: 5px;
+            filter: drop-shadow(0 2px 4px rgba(255, 77, 109, 0.2));
+        }
+
+        .msg.memory-letter .memory-title-text {
+            font-weight: bold;
+            color: #444;
+            font-size: 1.1rem;
+            display: block;
+        }
+
+        .msg.memory-letter .memory-sub-text {
+            font-size: 0.75rem;
+            color: var(--heart-red);
+            font-weight: 500;
+            display: block;
+        }
+
+        .msg.memory-letter .msg-time {
+            position: relative;
+            display: block;
+            text-align: right;
+            margin-top: 12px;
+            right: 0;
+            bottom: 0;
+            font-size: 0.65rem;
+            opacity: 1;
+            color: var(--heart-red);
+            font-weight: 500;
+        }
+
+        .wax-seal { font-size: 2.2rem; display: block; margin-bottom: 5px; }
+        .close-scrapbook {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 2.8rem;
+    cursor: pointer;
+    color: #8b0000;
+    z-index: 100;
+    font-family: serif;
+}
+
+        /* SCRAPBOOK OVERLAY */
+        #scrapbook-view { position: fixed; inset: 0; z-index: 1000000; display: none; align-items: center; justify-content: center; background: rgba(40, 5, 15, 0.9); backdrop-filter: blur(12px); overflow: hidden; }
+        .scrapbook-paper { 
+            background: linear-gradient(rgba(255, 240, 243, 0.96), rgba(255, 240, 243, 0.96)), url('https://www.transparenttextures.com/patterns/cuis-hearts.png'); 
+            width: 95%; max-width: 980px; padding: 50px; border-radius: 15px; text-align: center; 
+            max-height: 90vh; overflow-y: auto; border: 2px solid var(--gold-accent); 
+            box-shadow: 0 0 100px rgba(0,0,0,0.6); position: relative; z-index: 5; 
+        }
+        .scrapbook-header { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
+        .scrapbook-header h2 { font-family: 'Dancing Script', cursive; font-size: 3.5rem; color: #8b0000; margin: 0; }
+        .scrapbook-header p { font-size: 1.3rem; color: var(--heart-red); margin: 0; }
+        /* MEMORY ICON IN INPUT */
+        .memory-icon-wrapper {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .memory-icon {
+            width: 24px;
+            height: 24px;
+            fill: var(--heart-red);
+            transition: opacity 0.3s ease, transform 0.2s ease;
+            opacity: 1;
+        }
+
+        .memory-icon-wrapper:hover .memory-icon { 
+            transform: scale(1.15); 
+        }
+
+        /* TOOLTIP */
+        .memory-icon-wrapper .tooltip {
+            content: attr(data-tooltip);
+            position: absolute;
+            z-index: 100;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-8px);
+            background: var(--heart-red);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 18px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.24s ease, transform 0.24s ease;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(255, 77, 109, 0.4), 0 0 15px rgba(255, 77, 109, 0.2);
+            pointer-events: none;
+            letter-spacing: 0.3px;
+        }
+
+        .memory-icon-wrapper:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(-12px);
+        }
+        
+        .memory-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 45px; padding: 20px; }
+
+        .polaroid { background: white; padding: 15px 15px 5px 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); transition: 0.4s; position: relative; }
+
+        .polaroid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+        .polaroid-caption { font-family: 'Dancing Script', cursive; font-size: 1.6rem; color: #333; padding: 15px 5px; min-height: 65px; line-height: 1.2;
+        }
+        .polaroid:nth-child(odd) { transform: rotate(-3deg); }
+        .polaroid:nth-child(even) { transform: rotate(3deg); }
+
+        .polaroid:hover { transform: scale(1.08) rotate(0deg) !important; z-index: 10; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+
+        /* Floating Hearts Animation */
+        .scrapbook-heart {
+            position: absolute;
+            color: rgba(255, 105, 180, 0.6);
+            font-size: 1.5rem;
+            pointer-events: none;
+            z-index: 1;
+            bottom: -100px;
+            animation: floatUpScrapbook linear forwards;
+        }
+
+        @keyframes floatUpScrapbook {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MEMORY FEATURE OVERLAYS (from shared-memory.html) -->
+    <div id="zoom-overlay" onclick="closeZoom()"><img id="zoom-img" src=""></div>
+
+    <!-- COLLAB MODAL -->
+    <div id="memory-modal" class="modal-overlay">
+        <div class="glass-box" style="background:white; padding:35px; border-radius:30px; width:450px;">
+            <h1 class="romantic-title" style="font-size: 1.8rem;">Seal a Memory</h1>
+            <input type="text" id="memMovieTitle" placeholder="Movie we watched?" oninput="syncDraftText('movie', this.value)" onfocus="this.style.borderColor='var(--heart-red)'; this.style.boxShadow='0 0 12px rgba(255, 77, 109, 0.45)'" onblur="this.style.borderColor='var(--primary-pink)'; this.style.boxShadow='none'" style="width:100%; padding:12px; margin-bottom:15px; border-radius:15px; border: 2px solid var(--primary-pink); font-family: 'Poppins', sans-serif; outline: none; transition: 0.3s;">
+            <input type="text" id="memGeneralTitle" placeholder="Memory Title" oninput="syncDraftText('title', this.value)" onfocus="this.style.borderColor='var(--heart-red)'; this.style.boxShadow='0 0 12px rgba(255, 77, 109, 0.45)'" onblur="this.style.borderColor='var(--primary-pink)'; this.style.boxShadow='none'" style="width:100%; padding:12px; margin-bottom:15px; border-radius:15px; border: 2px solid var(--primary-pink); font-family: 'Poppins', sans-serif; outline: none; transition: 0.3s;">
+            <div id="preview-list"></div>
+            <div onclick="document.getElementById('fileIn').click()" style="border: 2px dashed var(--primary-pink); padding: 15px; border-radius: 15px; margin-bottom: 15px; cursor: pointer; background: #fffafb;">
+                <span style="color: var(--heart-red); font-weight:600;">+ Add more photos 📸</span>
+                <input type="file" id="fileIn" multiple accept="image/*" style="display:none" onchange="handleImages(this.files)">
+            </div>
+            <button onclick="uploadMemory()" style="width:100%;">Save this memory 💌</button>
+            <button onclick="requestCloseMemoryModal()" style="background:none; color:#999; margin-top:10px; border:none; cursor:pointer;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- SCRAPBOOK VIEW -->
+    <div id="scrapbook-view" class="modal-overlay" onclick="closeScrapbook()">
+        <div id="scrapbook-heart-container"></div>
+        <div class="scrapbook-paper" onclick="event.stopPropagation()">
+            <span style="position:absolute; top:20px; right:30px; font-size:2.8rem; cursor:pointer; color:#8b0000;" onclick="closeScrapbook()">&times;</span>
+            <div class="scrapbook-header">
+                <h2 id="viewTitle">Memory Name</h2>
+                <p id="viewMovieInfo">We watched Movie ❤️</p>
+                <p id="viewDateInfo" style="font-size:0.9rem; color:#888; margin-bottom: 20px;"></p>
+            </div>
+            <div id="viewGallery" class="memory-gallery"></div>
+        </div>
+    </div>
+
+    <div id="lock-screen">
+        <div class="setup-box">
+            <div class="heart-ornament">❤️</div>
+            <div class="romantic-title">A Heart's Key</div>
+            <div class="romantic-quote">Our Secret Sanctuary</div>
+            
+            <div class="input-container">
+                <input type="password" id="passInput" placeholder="••••••••" onkeypress="if(event.key==='Enter') checkPassword()" style="margin-bottom: 8px;">
+            </div>
+            <div id="passLockMessage" style="margin: 4px 0 8px; font-size: 0.9rem; color: var(--heart-red); display: none;"></div>
+
+            <div id="turnstile-container" class="cf-turnstile" data-sitekey="0x4AAAAAACxma-zOyUIwU6cP" data-theme="light" style="margin: 15px 0;"></div>
+
+            <button onclick="verifyAccess()" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <span id="btnText">Unlock Our Space</span>
+                <span id="btnLoader" class="loader-spinner" style="display:none;"></span>
+            </button>
+            
+            <div class="footer-group">
+                <div class="private-text">Private Access</div>
+                <div class="only-us">Only for us...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="setup-area" style="display: none;">
+        <div id="setup-bg-elements"></div>
+        <div class="setup-box">
+            <div id="setup-loading">
+                <div class="setup-spinner"></div>
+                <div class="sync-text">Syncing our world... ❤️</div>
+            </div>
+            <div class="romantic-title" style="font-size: 2.2rem;">Connect to Me</div>
+            <input type="text" id="nameInput" placeholder="How should I call you?">
+            <input type="text" id="roomInput" placeholder="Secret Room Code" onkeypress="if(event.key==='Enter') joinRoom()">
+            <button onclick="joinRoom()">Enter Our Theater ❤️</button>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <!-- CHAT SECTION -->
+        <div id="chat-container-wrapper">
+            <div id="chat-container">
+                <div id="chat-header">Our Cinema Whispers 💌</div>
+                <div id="chat-messages"></div>
+                <div id="typing-indicator"></div>
+                <div id="chat-input-area">
+                    <div class="input-wrapper">
+                        <input type="text" id="chatInput" placeholder="Send a kiss..." onkeypress="if(event.key==='Enter') sendChatMessage('chatInput')">
+                        <div class="memory-icon-wrapper" id="memBtnInside" onclick="requestMemoryModal()">
+                            <span class="tooltip">Seal a memory</span>
+                            <svg class="memory-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g data-name="Layer 53"><path d="M22,9.25a.76.76,0,0,0-.75.75v6l-4.18-4.78a2.84,2.84,0,0,0-4.14,0L10.06,14.5l-.94-1.14a2.76,2.76,0,0,0-4.24,0L2.75,15.93V6A3.26,3.26,0,0,1,6,2.75h8a.75,2.75,0,0,0,0-1.5H6A4.75,4.75,0,0,0,1.25,6V18a.09.09,0,0,0,0,.05v0A4.75,4.75,0,0,0,6,22.75H18a4.75,4.75,0,0,0,4.74-4.68s0,0,0,0V10A.76.76,0,0,0,22,9.25Zm-4,12H6a3.25,3.25,0,0,1-3.23-3L6,14.32a1.29,1.29,0,0,1,1.92,0l1.51,1.82a.74.74,0,0,0,.57.27.86.86,0,0,0,.57-.26l3.44-3.94a1.31,1.31,0,0,1,1.9,0l5.27,6A3.24,3.24,0,0,1,18,21.25Z"/><path d="M4.25,7A2.75,2.75,0,1,0,7,4.25,2.75,2.75,0,0,0,4.25,7Zm4,0A1.25,1.25,0,1,1,7,5.75,1.25,1.25,0,0,1,8.25,7Z"/><path d="M16,5.75h2.25V8a.75.75,0,0,0,1.5,0V5.75H22a.75,2.75,0,0,0,0-1.5H19.75V2a.75,2.75,0,0,0-1.5,0V4.25H16a.75,2.75,0,0,0,0,1.5Z"/></g></svg>
+                        </div>
+                    </div>
+                    <button id="sendBtn" onclick="sendChatMessage('chatInput')">➤</button>
+                </div>
+            </div>
+            <!-- SLEEK TOGGLE -->
+            <div id="chat-toggle" onclick="toggleChat()">◀</div>
+        </div>
+
+        <div id="theater-side">
+            <div id="top-info">
+                <span>Our Cinema ❤️</span>
+                <span id="status-text">Waiting for connection... ✨</span>
+            </div>
+
+            <div id="cinema-wrapper">
+                <div id="esc-hint">PRESS ESC OR THE BUTTON BELOW TO RETURN... ❤️</div>
+                <div id="whisper-notif"></div>
+                
+                <!-- NEW MODERN PRESENCE ALERT -->
+                <div id="presence-alert"></div>
+
+                <!-- FULLSCREEN TYPING & MESSAGES -->
+                <div id="fs-typing-indicator"></div>
+                <div id="fs-message-popup"></div>
+
+                <!-- WHISPER OVERLAY -->
+                <div id="whisper-overlay" onmousemove="event.stopPropagation();" onclick="event.stopPropagation();">
+                    <input type="text" id="whisperInput" placeholder="Whisper something sweet... (Esc or Alt+W to close)" onkeypress="if(event.key==='Enter') sendChatMessage('whisperInput')">
+                </div>
+
+                <div id="seek-left" class="seek-overlay">
+                    <svg viewBox="0 0 512 512"><path d="m421.938 90.068c-77.266-77.261-196.126-88.942-286.495-34.968l1.557-8.657a21.337 21.337 0 0 0 -42-7.552l-11.385 63.286a21.342 21.342 0 0 0 14.25 24.016l55.3 18.437a21.335 21.335 0 0 0 13.5-40.479l-19.12-6.374c74.69-51.138 178.078-43.679 244.224 22.457 74.854 74.86 74.854 196.672 0 271.532-74.875 74.864-196.667 74.864-271.542 0a192.586 192.586 0 0 1 -44.125-203 21.334 21.334 0 1 0 -39.979-14.907 234.734 234.734 0 0 0 385.815 248.073c91.489-91.494 91.489-240.37 0-331.864z"/><path d="m192 362.667a21.334 21.334 0 0 0 21.333-21.334v-149.333a21.336 21.336 0 0 0 -32.312-18.292l-53.333 32a21.334 21.334 0 0 0 21.958 36.584l21.021-12.615v111.656a21.334 21.334 0 0 0 21.333 21.334z"/><path d="m309.333 170.667c-41.864 0-74.666 42.166-74.666 96s32.8 96 74.666 96 74.667-42.167 74.667-96-32.8-96-74.667-96zm0-149.334c15.136 0 32 21.9 32 53.334s-16.864 53.333-32 53.333-32-21.9-32-53.333 16.867-53.334 32-53.334z"/></svg>
+                    <b>10s</b>
+                </div>
+                <div id="seek-right" class="seek-overlay">
+                    <svg viewBox="0 0 512 512"><path d="m475.875 173.859a21.334 21.334 0 1 0 -39.975 14.907 192.586 192.586 0 0 1 -44.125 203c-74.875 74.854-196.688 74.854-271.542 0s-74.854-196.672 0-271.532c66.012-66.015 169.159-73.586 244.142-22.434l-19.042 6.347a21.335 21.335 0 1 0 13.5 40.479l55.3-18.437a21.342 21.342 0 0 0 14.25-24.016l-11.383-63.282a21.337 21.337 0 0 0 -42 7.552l1.534 8.526c-90.141-53.884-209.142-42.244-286.472 35.099-91.489 91.494-91.489 240.37 0 331.864a234.7 234.7 0 0 0 385.813-248.073z"/><path d="m192 362.667a21.334 21.334 0 0 0 21.333-21.334v-149.333a21.336 21.336 0 0 0 -32.312-18.292l-53.333 32a21.334 21.334 0 0 0 21.958 36.584l21.021-12.615v111.656a21.334 21.334 0 0 0 21.333 21.334z"/><path d="m309.333 170.667c-41.864 0-74.666 42.166-74.666 96s32.8 96 74.666 96 74.667-42.167 74.667-96-32.8-96-74.667-96zm0 149.333c-15.135 0-32-21.9-32-53.333s16.865-53.334 32-53.334 32 21.9 32 53.334-16.864 53.333-32 53.333z"/></svg>
+                    <b>10s</b>
+                </div>
+
+                <div id="video-container" onclick="togglePlay()">
+                    <!-- STATES -->
+                    <div id="empty-state" class="state-overlay" style="display: flex;">
+                        <div class="empty-heart">❤️</div>
+                        <div class="empty-text">Waiting for a movie...</div>
+                    </div>
+
+                    <div id="video-loader" class="state-overlay">
+                        <div class="spinner"></div>
+                        <p style="margin-top:20px; font-family:'Dancing Script'; font-size:1.4rem;">Loading our movie... ❤️</p>
+                    </div>
+
+                    <div id="ready-state" class="state-overlay">
+                        <div class="ready-text">Movie Ready! ✨</div>
+                    </div>
+                    
+                    <video id="main-video" preload="auto" playsinline>
+                        <source src="" type="video/mp4">
+                    </video>
+                    
+                    <div id="subtitle-ghost"></div>
+                    
+                    <div id="playback-ripple"></div>
+
+                    <div class="video-controls" onclick="event.stopPropagation()">
+                        <div class="progress-area" id="progArea">
+                            <div class="progress-bar" id="pBar"></div>
+                        </div>
+                        
+                        <div class="controls-main">
+                        <button class="play-pause" id="playBtn" onclick="togglePlay()">
+                            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 163.861 163.861" style="enable-background:new 0 0 163.861 163.861;" xml:space="preserve">
+                                <g>
+                                    <path d="M34.857,3.613C20.084-4.861,8.107,2.081,8.107,19.106v125.637c0,17.042,11.977,23.975,26.75,15.509L144.67,97.275 c14.778-8.477,14.778-22.211,0-30.686L34.857,3.613z"/>
+                                </g>
+                            </svg>
+                        </button>
+                            <div class="time-display"><span id="curTime">0:00</span> / <span id="durTime">0:00</span></div>
+                            
+                            <svg class="seek-btn-svg" onclick="seekManual(-10)" viewBox="0 0 512 512"><path d="m421.938 90.068c-77.266-77.261-196.126-88.942-286.495-34.968l1.557-8.657a21.337 21.337 0 0 0 -42-7.552l-11.385 63.286a21.342 21.342 0 0 0 14.25 24.016l55.3 18.437a21.335 21.335 0 0 0 13.5-40.479l-19.12-6.374c74.69-51.138 178.078-43.679 244.224 22.457 74.854 74.86 74.854 196.672 0 271.532-74.875 74.864-196.667 74.864-271.542 0a192.586 192.586 0 0 1 -44.125-203 21.334 21.334 0 1 0 -39.979-14.907 234.734 234.734 0 0 0 385.815 248.073c91.489-91.494 91.489-240.37 0-331.864z"/><path d="m192 362.667a21.334 21.334 0 0 0 21.333-21.334v-149.333a21.336 21.336 0 0 0 -32.312-18.292l-53.333 32a21.334 21.334 0 0 0 21.958 36.584l21.021-12.615v111.656a21.334 21.334 0 0 0 21.333 21.334z"/><path d="m309.333 362.667c41.865 0 74.667-42.167 74.667-96s-32.8-96-74.667-96-74.666 42.166-74.666 96 32.802 96 74.666 96zm0-149.334c15.136 0 32 21.9 32 53.334s-16.864 53.333-32 53.333-32-21.9-32-53.333 16.867-53.334 32-53.334z"/></svg>
+                            <svg class="seek-btn-svg" onclick="seekManual(10)" viewBox="0 0 512 512"><path d="m475.875 173.859a21.334 21.334 0 1 0 -39.975 14.907 192.586 192.586 0 0 1 -44.125 203c-74.875 74.854-196.688 74.854-271.542 0s-74.854-196.672 0-271.532c66.012-66.015 169.159-73.586 244.142-22.434l-19.042 6.347a21.335 21.335 0 1 0 13.5 40.479l55.3-18.437a21.342 21.342 0 0 0 14.25-24.016l-11.383-63.282a21.337 21.337 0 0 0 -42 7.552l1.534 8.526c-90.141-53.884-209.142-42.244-286.472 35.099-91.489 91.494-91.489 240.37 0 331.864a234.7 234.7 0 0 0 385.813-248.073z"/><path d="m192 362.667a21.334 21.334 0 0 0 21.333-21.334v-149.333a21.336 21.336 0 0 0 -32.312-18.292l-53.333 32a21.334 21.334 0 0 0 21.958 36.584l21.021-12.615v111.656a21.334 21.334 0 0 0 21.333 21.334z"/><path d="m309.333 170.667c-41.864 0-74.666 42.166-74.666 96s32.8 96 74.666 96 74.667-42.167 74.667-96-32.8-96-74.667-96zm0 149.333c-15.135 0-32-21.9-32-53.333s16.865-53.334 32-53.334 32 21.9 32 53.334-16.864 53.333-32 53.333z"/></svg>
+                        
+                            <div class="right-controls">
+                                <!-- HIDDEN FILE INPUT -->
+                                <input type="file" id="subUpload" accept=".srt,.vtt" style="display: none;" onchange="uploadSubtitle()">
+                                
+                                <!-- UPLOAD SUBTITLES -->
+                                <button class="player-btn" onclick="document.getElementById('subUpload').click()" title="Upload Subtitles">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" style="fill: currentColor;">
+                                        <path d="M19 4H5c-1.11 0-2 .9-2 2v12c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 7H9.5v-.5h-2v3h2V13H11v1c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1h3c.55 0 1 .45 1 1v1zm7 0h-1.5v-.5h-2v3h2V13H18v1c0 .55-.45 1-1 1h-3c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1h3c.55 0 1 .45 1 1v1z"/>
+                                    </svg>
+                                </button>
+                                
+                                <!-- CHANGE MOVIE (UPDATED ICON) -->
+                                <button class="player-btn" onclick="changeMovie()" title="Change Movie">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" style="fill: currentColor;">
+                                        <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/>
+                                    </svg>
+                                </button>
+                                
+                                <!-- FULL CINEMA (UPDATED ICON) -->
+                                <button id="fsBtn" class="player-btn" onclick="toggleFullscreen()" title="Full Cinema">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" style="fill: currentColor;">
+                                        <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reaction-bar">
+                    <div class="react-btn" onclick="sendReaction('🥰', 'So sweet!', 'ani-pulse')">🥰</div>
+                    <div class="react-btn" onclick="sendReaction('🌹', 'So romantic!', 'ani-pulse')">🌹</div>
+                    <div class="react-btn" onclick="sendReaction('😘', 'Kissing you', 'ani-pulse')">😘</div>
+                    <div class="react-btn" onclick="sendReaction('🤣', 'So funny!', 'ani-bounce')">🤣</div>
+                    <div class="react-btn" onclick="sendReaction('😭', 'Crying!', 'ani-shiver')">😭</div>
+                    <div class="react-btn" onclick="sendReaction('🥺', 'So sad', 'ani-shiver')">🥺</div>
+                    <div class="react-btn" onclick="sendReaction('🫶', 'Awww', 'ani-pulse')">🫶</div>
+                    <div class="react-btn" onclick="sendReaction('🫵', 'That\'s you', 'ani-pulse')">🫵</div>
+                    <div class="react-btn" onclick="sendReaction('👍', 'Yeah!', 'ani-pop')">👍</div>
+                    <div class="react-btn" onclick="sendReaction('👌', 'Okay!', 'ani-pulse')">👌</div>
+                    <div class="react-btn" onclick="sendReaction('💯', 'For real', 'ani-pulse')">💯</div>
+                    <div class="react-btn" onclick="sendReaction('💀', 'Cooked!', 'ani-pulse')">💀</div>
+                    <div class="react-btn" onclick="sendReaction('🔥', 'This is epic!', 'ani-pop')">🔥</div>
+                    <div class="react-btn" onclick="sendReaction('👊', 'Punch!', 'ani-pulse')">👊</div>
+                    <div class="react-btn" onclick="sendReaction('🔪', 'Stab!', 'ani-pulse')">🔪</div>
+                    <div class="react-btn" onclick="sendReaction('🥵', 'So sexy!', 'ani-pop')">🥵</div>
+                    <div class="react-btn" onclick="sendReaction('😴', 'Sleepy', 'ani-pulse')">😴</div>
+                    <div class="react-btn" onclick="sendReaction('👀', 'Did u see that!', 'ani-pulse')">👀</div>
+                    <div class="react-btn" onclick="sendReaction('🫢', 'WTF!', 'ani-pulse')">🫢</div>
+                    <div class="react-btn" onclick="sendReaction('😱', 'OMG!', 'ani-pulse')">😱</div>
+                    <div class="react-btn" onclick="sendReaction('✨', 'Video call!', 'ani-pop')">✨</div>
+                    
+                    <div class="reaction-bar-separator"></div>
+                    
+                    <div class="svg-icon-wrapper">
+                        <button class="svg-icon-btn" data-tooltip="Whisper" onclick="toggleWhisper()">
+                            <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g transform="translate(-2008 -248)"><path d="m2018 298.832v8.168c0 .792.47 1.509 1.19 1.829s1.57.183 2.16-.349c0 0 2.97-2.702 5.82-5.297 2.96-2.692 6.82-4.183 10.82-4.183h22.01c3.18 0 6.24-1.264 8.49-3.514s3.51-5.302 3.51-8.484c0-6.108 0-21.002 0-21.002 0-1.104-.9-2-2-2s-2 .896-2 2v21.002c0 2.121-.84 4.156-2.34 5.655-1.5 1.5-3.54 2.343-5.66 2.343h-22.01c-4.99 0-9.81 1.862-13.51 5.223 0 0-2.48 2.257-2.48 2.257 0-2.152 0-4.423 0-5.2v-.28c0-1.105-.9-2-2-2-2.12 0-4.16-.843-5.66-2.343-1.5-1.499-2.34-3.534-2.34-5.655 0-6.109 0-17.895 0-24.004 0-2.121.84-4.156 2.34-5.655 1.5-1.5 3.54-2.343 5.66-2.343h37c1.1 0 2-.896 2-2s-.9-2-2-2h-37c-3.18 0-6.24 1.264-8.49 3.514s-3.51 5.302-3.51 8.484v24.004c0 3.182 1.26 6.234 3.51 8.484 1.78 1.773 4.05 2.934 6.49 3.346zm35.9-40.45c-.27-.824-1.03-1.382-1.9-1.382s-1.63.558-1.9 1.382l-2.63 8.087s-8.09 2.629-8.09 2.629c-.82.268-1.38 1.036-1.38 1.902s.56 1.634 1.38 1.902l8.09 2.629s2.63 8.087 2.63 8.087c.27.824 1.03 1.382 1.9 1.382s1.63-.558 1.9-1.382l2.63-8.087s8.09-2.629 8.09-2.629c.82-.268 1.38-1.036 1.38-1.902s-.56-1.634-1.38-1.902l-8.09-2.629s-2.63-8.087-2.63-8.087zm-31.9 26.618h24c1.1 0 2-.896 2-2s-.9-2-2-2h-24c-1.1 0-2 .896-2 2s.9 2 2 2zm0-8h14c1.1 0 2-.896 2-2s-.9-2-2-2h-14c-1.1 0-2 .896-2 2s.9 2 2 2zm30-11.532 1.04 3.206c.2.609.68 1.086 1.29 1.284l3.2 1.042s-3.2 1.042-3.2 1.042c-.61.198-1.09.675-1.29 1.284l-1.04 3.206s-1.04-3.206-1.04-3.206c-.2-.609-.68-1.086-1.29-1.284l-3.2-1.042s3.2-1.042 3.2-1.042c.61-.198 1.09-.675 1.29-1.284zm-30 3.532h14c1.1 0 2-.896 2-2s-.9-2-2-2h-14c-1.1 0-2 .896-2 2s.9 2 2 2zm44.9-16.618c-.27-.824-1.03-1.382-1.9-1.382s-1.63.558-1.9 1.382l-.91 2.804s-2.81.912-2.81.912c-.82.268-1.38 1.036-1.38 1.902s.56 1.634 1.38 1.902l2.81.912s.91 2.804.91 2.804c.27.824 1.03 1.382 1.9 1.382s1.63-.558 1.9-1.382l.91-2.804s2.81-.912 2.81-.912c.82-.268 1.38-1.036 1.38-1.902s-.56-1.634-1.38-1.902l-2.81-.912s-.91-2.804-.91-2.804z"/></g></svg>
+                        </button>
+                        <button class="svg-icon-btn" data-tooltip="Save movie state" onclick="saveVideoState()">
+                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="512" height="512">
+<g id="Floppy_Disk_1_">
+	<path style="fill:none;stroke-width:40;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="&#10;&#9;&#9;M452,492c22,0,40-18,40-40V140c0-11.201-4.399-21.201-11.599-28.401l-80-80C393.201,24.4,383.201,20,372,20H60c-22,0-40,18-40,40&#10;&#9;&#9;v392c0,22,18,40,40,40h312"/>
+	<path style="fill:none;stroke-width:40;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="&#10;&#9;&#9;M100,492V292c0-22.091,17.909-40,40-40h192c22.091,0,40,17.909,40,40v200"/>
+	
+		<line style="fill:none;stroke-width:40;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" x1="180" y1="332" x2="292" y2="332"/>
+	
+		<line style="fill:none;stroke-width:40;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" x1="180" y1="412" x2="292" y2="412"/>
+	<path style="fill:none;stroke-width:40;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="&#10;&#9;&#9;M332,20v112c0,22.091-17.909,40-40,40H180c-22.091,0-40-17.909-40-40V20"/>
+	
+		<line style="fill:none;stroke-width:40;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" x1="252" y1="20" x2="252" y2="92"/></g></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROMANTIC MOVIE SELECTION MODAL -->
+    <div id="romantic-movie-modal" aria-hidden="true" style="display:none;">
+        <div class="romantic-modal-container" role="dialog" aria-modal="true" aria-labelledby="romantic-modal-title">
+            <button class="romantic-modal-close" onclick="closeRomanticMovieModal()" title="Close">×</button>
+            <div id="romantic-modal-header">
+                <div id="romantic-modal-title" class="romantic-title">Our Cinema</div>
+                <div class="romantic-subtitle">Now playing in our hearts</div>
+            </div>
+
+            <div id="loading-section">
+                <div class="heart-scanner-container">
+                    <div class="heart-loader"></div>
+                    <div class="scanning-laser"></div>
+                </div>
+                <div id="romantic-search-status" style="font-family: 'Dancing Script'; color: var(--her-berry); font-size: 22px;">
+                    Searching for our movies...
+                </div>
+            </div>
+
+            <div id="search-wrapper">
+                <div class="search-input-with-icon">
+                    <input type="text" id="movie-search" class="search-bar" placeholder="Find a movie, my love..." onkeyup="filterRomanticMovies()">
+                    <button id="private-link-toggle" class="player-btn" type="button" onclick="togglePrivateLinkArea()" aria-label="Paste a private link">
+                        <svg viewBox="0 0 24 24" width="18" height="18" style="fill: currentColor;">
+                            <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div id="private-link-area" style="display:none; margin-top: 10px;">
+                <div class="private-link-input-with-icon">
+                    <input type="text" id="private-link-input" placeholder="Paste your private .mp4 link..." oninput="const privateLinkPlayBtn = document.getElementById('private-link-play-btn'); if (privateLinkPlayBtn) privateLinkPlayBtn.style.display = this.value.trim().length > 0 ? 'inline-flex' : 'none';" style="flex:1; border:none; outline:none; background:transparent; font-family:'Poppins', sans-serif; font-size:14px; color:var(--velvet-berry); height:48px; line-height:48px; vertical-align:middle; padding:0; margin:0; box-sizing:border-box;">
+                    <button id="private-link-play-btn" style="display:none;" onclick="playPrivateLinkMovie(document.getElementById('private-link-input').value)" aria-label="Play private link">
+                        <svg viewBox="0 0 24 24" width="18" height="18" style="fill: currentColor;">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div id="movie-list"></div>
+
+            <div id="romantic-modal-footer">
+                <button id="continue-our-moment-btn" onclick="continueOurMoment()">Continue Our Previous Moment</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-check-compat.js"></script>
+
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyD-i0_FDxzVLbGDIHQTpqHNSyi2QcN4UaM", authDomain: "ourlovegame-770b4.firebaseapp.com", databaseURL: "https://ourlovegame-770b4-default-rtdb.firebaseio.com", projectId: "ourlovegame-770b4", storageBucket: "ourlovegame-770b4.firebasestorage.app", messagingSenderId: "397754256619", appId: "1:397754256619:web:05a2f1afc0ccfe994cc2ae" };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Initialize Firebase App Check with custom Turnstile provider
+        const { initializeAppCheck, CustomProvider } = firebase.appCheck;
+        const appCheck = initializeAppCheck(firebase.app(), {
+            provider: new CustomProvider({
+                getToken: () => {
+                    return new Promise((resolve) => {
+                        if (turnstileToken) {
+                            resolve({
+                                token: turnstileToken,
+                                expireTimeMillis: Date.now() + 3600000 // 1 hour
+                            });
+                        } else {
+                            // If no token yet, resolve with empty or wait
+                            resolve({
+                                token: '',
+                                expireTimeMillis: Date.now() + 60000 // 1 minute
+                            });
+                        }
+                    });
+                }
+            }),
+            isTokenAutoRefreshEnabled: true
+        });
+
+        // Check for existing access token
+        if (sessionStorage.getItem('access_token')) {
+            initApp();
+        }
+
+        let turnstileToken = null;
+
+        function onTurnstileSuccess(token) {
+            turnstileToken = token;
+        }
+
+        function initApp() {
+            document.getElementById('lock-screen').style.display = 'none';
+            document.getElementById('setup-area').style.display = 'flex';
+            startBackgroundHearts();
+        }
+
+        let roomID, mySymbol, myName, partnerName = "My Love", isRemoteChange = false;
+        const video = document.getElementById('main-video'), pBar = document.getElementById('pBar'), playBtn = document.getElementById('playBtn'), fsBtn = document.getElementById('fsBtn'), loader = document.getElementById('video-loader');
+        
+        let subtitleData = [];
+        let isDragging = false; 
+        let isReadyAnimShown = false; 
+        let isChatHidden = false;
+        let controlsTimeout;
+        let lastPersistSave = 0;
+        let initialChatLoadTime = Date.now();
+        let videoLoadingTimeout = null;
+        let lastMovieSelectionTime = 0;
+        const VIDEO_SELECTION_DEBOUNCE = 500; // Prevent rapid clicks
+        const VIDEO_LOAD_TIMEOUT = 15000; // 15 seconds max wait for video to load
+
+        let passwordAttempts = 0;
+        let passwordLockedUntil = 0;
+        let passwordLockInterval = null;
+        let passwordWarnTimeout = null;
+
+        function setPasswordLockMessage(text) {
+            const lockMessage = document.getElementById('passLockMessage');
+            if (lockMessage) {
+                lockMessage.textContent = text;
+                lockMessage.style.display = text ? 'block' : 'none';
+            }
+        }
+
+        function clearPasswordLockMessage() {
+            setPasswordLockMessage('');
+            if (passwordWarnTimeout) {
+                clearTimeout(passwordWarnTimeout);
+                passwordWarnTimeout = null;
+            }
+        }
+
+        function startPasswordCooldown() {
+            const input = document.getElementById('passInput');
+            if (passwordLockInterval) return;
+
+            passwordLockInterval = setInterval(() => {
+                const now = Date.now();
+                if (now >= passwordLockedUntil) {
+                    clearInterval(passwordLockInterval);
+                    passwordLockInterval = null;
+                    passwordAttempts = 0;
+                    passwordLockedUntil = 0;
+                    input.disabled = false;
+                    clearPasswordLockMessage();
+                    return;
+                }
+                const secondsLeft = Math.ceil((passwordLockedUntil - now) / 1000);
+                setPasswordLockMessage(`Try again in ${secondsLeft} second${secondsLeft===1?'':'s'}`);
+            }, 1000);
+        }
+
+        function verifyAccess() {
+            const input = document.getElementById('passInput');
+            const btn = document.getElementById('unlock-btn');
+            const btnText = document.getElementById('btnText');
+            const btnLoader = document.getElementById('btnLoader');
+
+            // Check if Turnstile token is available
+            if (!turnstileToken) {
+                alert('Please complete the security check first.');
+                return;
+            }
+
+            // Disable button and show loading state
+            btn.disabled = true;
+            btnText.textContent = "Verifying...";
+            btnLoader.style.display = 'inline-block';
+
+            // Fetch secret from Firebase
+            database.ref('build_revision').once('value').then(snap => {
+                const secret = snap.val();
+
+                // Check if password matches
+                if (input.value === secret) {
+                    // Success: Store in sessionStorage and init app
+                    sessionStorage.setItem('access_token', secret);
+                    input.value = '';
+                    initApp();
+                } else {
+                    // Failure: Show error and reset after 3 seconds
+                    btnLoader.style.display = 'none';
+                    btnText.textContent = "Wrong Password";
+                    setTimeout(() => {
+                        btnText.textContent = "Unlock Our Space";
+                        btn.disabled = false;
+                    }, 3000);
+                }
+            }).catch(err => {
+                console.error('Failed to fetch secret:', err);
+                btnLoader.style.display = 'none';
+                btnText.textContent = "Error - Try Again";
+                setTimeout(() => {
+                    btnText.textContent = "Unlock Our Space";
+                    btn.disabled = false;
+                }, 3000);
+            });
+        }
+
+        function spawnHearts() {
+            const container = document.getElementById('lock-screen');
+            const icons = ['❤️', '💖', '💗', '✨'];
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'bg-heart';
+                heart.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.fontSize = (Math.random() * 0.8 + 1) + 'rem';
+                heart.style.animationDuration = (Math.random() * 3 + 5) + 's';
+                heart.style.opacity = Math.random() * 0.6;
+                container.appendChild(heart);
+                setTimeout(() => heart.remove(), 7000);
+            }, 600);
+        }
+
+        let setupHeartInterval = null;
+        let backgroundHeartInterval = null;
+
+        function spawnSetupHeart() {
+            const wrapper = document.getElementById('setup-bg-elements');
+            if(!wrapper) return;
+            const heart = document.createElement('div');
+            heart.innerText = '❤️';
+            heart.style.left = Math.random() * 90 + 'vw';
+            heart.style.bottom = '-30px';
+            heart.style.fontSize = (Math.random() * 20 + 16) + 'px';
+            heart.style.opacity = (Math.random() * 0.35) + 0.55;
+            wrapper.appendChild(heart);
+            setTimeout(() => heart.remove(), 6200);
+        }
+
+        function startBackgroundHearts() {
+            if(backgroundHeartInterval) return;
+            backgroundHeartInterval = setInterval(() => spawnSetupHeart(), 800);
+        }
+
+        function stopBackgroundHearts() {
+            if(backgroundHeartInterval) {
+                clearInterval(backgroundHeartInterval);
+                backgroundHeartInterval = null;
+            }
+            document.getElementById('setup-bg-elements').innerHTML = '';
+        }
+
+        function toggleSetupLoader(show) {
+            const loading = document.getElementById('setup-loading');
+            const setupBox = document.querySelector('#setup-area .setup-box');
+            const inputs = [document.getElementById('nameInput'), document.getElementById('roomInput')];
+            const btn = document.querySelector('#setup-area button');
+            if(!loading) return;
+
+            if(show) {
+                if(setupBox) setupBox.classList.add('loading');
+                if(setupHeartInterval) clearInterval(setupHeartInterval);
+                for (let i = 0; i < 3; i++) spawnSetupHeart();
+                setupHeartInterval = setInterval(() => { for (let i = 0; i < 3; i++) spawnSetupHeart(); }, 180);
+            } else {
+                if(setupBox) setupBox.classList.remove('loading');
+                if(setupHeartInterval) { clearInterval(setupHeartInterval); setupHeartInterval = null; }
+                document.getElementById('setup-bg-elements').innerHTML = '';
+            }
+
+            loading.style.display = show ? 'flex' : 'none';
+            inputs.forEach(i => { if(i) i.disabled = show; });
+            if(btn) btn.disabled = show;
+        }
+
+        function joinRoom() { 
+            roomID = document.getElementById("roomInput").value; 
+            myName = document.getElementById("nameInput").value; 
+            if (!roomID || !myName) return alert("Fill everything!"); 
+
+            toggleSetupLoader(true);
+            
+            const stored = JSON.parse(localStorage.getItem('cinema_session_' + roomID));
+            const enterRoom = (symbol) => {
+                mySymbol = symbol;
+                initialChatLoadTime = Date.now();
+                // Don't show modal here - wait until room is fully loaded
+                startSession();
+            };
+            
+            if(stored && stored.name === myName) {
+                enterRoom(stored.symbol);
+            } else {
+                database.ref('rooms/' + roomID).once('value').then(snap => { 
+                    const d = snap.val(); 
+                    let symbol;
+                    if (d && d.playerX === myName) symbol = 'X';
+                    else if (d && d.playerO === myName) symbol = 'O';
+                    else if (!d || !d.playerX || d.playerX === "Waiting...") symbol = 'X';
+                    else if (!d || !d.playerO || d.playerO === "Waiting...") symbol = 'O';
+                    else { toggleSetupLoader(false); alert("Room is full! ❤️"); return; } 
+
+                    localStorage.setItem('cinema_session_' + roomID, JSON.stringify({ name: myName, symbol: symbol }));
+                    enterRoom(symbol);
+                }).catch(err => {
+                    console.error('Failed to load room info:', err);
+                    toggleSetupLoader(false);
+                    alert('Could not connect to the room. Please try again.');
+                }); 
+            }
+        }
+
+        function startSession() {
+            const amOnline = database.ref('.info/connected');
+            const userRef = database.ref('rooms/' + roomID + '/online/' + mySymbol);
+            
+            amOnline.on('value', (snap) => {
+                if (snap.val()) {
+                    userRef.onDisconnect().remove();
+                    userRef.set(true);
+                }
+            });
+
+            // Ensure disconnect status is applied immediately rather than waiting for server timeout
+            window.addEventListener('beforeunload', () => {
+                if (userRef) userRef.remove();
+            });
+
+            // Pre-load existing data before starting full session
+            Promise.all([
+                // Load room data (player names)
+                database.ref('rooms/' + roomID).once('value').then(snap => {
+                    const d = snap.val();
+                    if(!d) database.ref('rooms/' + roomID).update({ playerX: myName, playerO: "Waiting...", loadingX: false, loadingO: false, videoSrc: "", subtitleSrc: "", modalOpen: true, secret: sessionStorage.getItem('access_token') }); 
+                    else if(d['player' + mySymbol] !== myName) database.ref('rooms/' + roomID).update({ ['player' + mySymbol]: myName, secret: sessionStorage.getItem('access_token') }); 
+                    if(d && d.modalOpen === undefined) database.ref('rooms/' + roomID).update({ modalOpen: true, secret: sessionStorage.getItem('access_token') });
+                }),
+                // Load existing chat messages
+                database.ref('rooms/'+roomID+'/messages').once('value').then(snap => {
+                    const messages = snap.val();
+                    if (messages) {
+                        Object.values(messages).sort((a, b) => a.time - b.time).forEach(m => {
+                            addDateHeaderIfNeeded(m.time);
+                            const div = document.createElement("div");
+                            const timeLabel = new Date(m.time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                            
+                            if(m.type === 'memory') {
+                                // Memory message bubble
+                                div.className = `msg memory-letter ${m.sender === myName ? 'me' : 'them'}`;
+                                div.onclick = () => showScrapbook(m.title, m.movie, m.images, m.savedDate);
+                                div.innerHTML = `<span class="wax-seal">💌</span>
+                                    <div style="font-family:'Dancing Script', cursive; font-weight:800; color:#444; font-size:1.1rem;">A Shared Memory</div>
+                                    <div style="font-size:0.75rem; color:var(--heart-red); font-weight:500;">click to view memory</div>
+                                    <div class="msg-time" style="margin-top:12px; position:relative; right:0; bottom:0; text-align:right;">${timeLabel}</div>`;
+                            } else {
+                                // Regular text message
+                                div.className = `msg ${m.sender === myName ? 'me' : 'them'}`; 
+                                div.innerHTML = `
+                                    <div style="font-size:0.6rem; font-weight:bold; margin-bottom:4px;">${m.sender===myName?'You':m.sender}</div>
+                                    <div style="margin-bottom:4px; white-space:pre-wrap;">${linkifyText(m.text)}</div>
+                                    <div class="msg-time">${timeLabel}</div>
+                                `;
+                            }
+                            
+                            document.getElementById("chat-messages").appendChild(div);
+                        });
+                        document.getElementById("chat-messages").scrollTop = document.getElementById("chat-messages").scrollHeight;
+                    }
+                }),
+                // Load shared memory data
+                database.ref('rooms/'+roomID+'/memories').once('value').then(snap => {
+                    const memories = snap.val();
+                    if (memories) {
+                        // Store memories in a global variable for access throughout the session
+                        window.loadedMemories = memories;
+                    } else {
+                        window.loadedMemories = {};
+                    }
+                })
+            ]).then(() => {
+                // Hide the local setup loader before entering the room
+                toggleSetupLoader(false);
+
+                // Stop background hearts
+                stopBackgroundHearts();
+
+                // After data is loaded, start listening for real-time updates
+                document.getElementById("setup-area").style.display = "none"; 
+                document.getElementById("main-content").style.display = "grid"; 
+                
+                // Show welcome notification for the user who just joined
+                const alertBox = document.getElementById('presence-alert');
+                const welcomeMsg = `Our screen, our story... welcome home, ${myName}. 💖`;
+                alertBox.innerText = welcomeMsg;
+                alertBox.classList.add('show');
+                setTimeout(() => alertBox.classList.remove('show'), 5000);
+                
+                // Play welcome sound
+                playSound('user-joined.mp3');
+                
+                // Show fullscreen indicator if needed
+                if(document.fullscreenElement || isChatHidden) {
+                    const fsInd = document.getElementById('fs-typing-indicator');
+                    fsInd.innerHTML = `🔔 ${welcomeMsg}`;
+                    fsInd.classList.add('visible');
+                    setTimeout(() => fsInd.classList.remove('visible'), 5000);
+                }
+                
+                // Now show the movie selection modal
+                showRomanticMovieOverlay();
+                
+                listenForChat(); 
+                listenForTyping(); 
+                initCinemaSync();
+                listenForDraft();
+                setupInputVisibility();
+            }).catch(err => {
+                console.error('Failed during startup:', err);
+                toggleSetupLoader(false);
+                alert('Unable to start the session. Please refresh and try again.');
+            });
+        }
+
+        function toggleChat() {
+            isChatHidden = !isChatHidden;
+            const mainContent = document.getElementById('main-content');
+            const arrow = document.getElementById('chat-toggle');
+            
+            if(isChatHidden) {
+                mainContent.classList.add('chat-hidden');
+                arrow.innerText = '▶'; 
+            } else {
+                mainContent.classList.remove('chat-hidden');
+                arrow.innerText = '◀'; 
+            }
+        }
+
+        function parseTime(t) {
+            if (!t) return 0;
+            t = t.trim().replace(',', '.');
+            const parts = t.split(':');
+            if (parts.length === 3) {
+                return (parseFloat(parts[0]) * 3600) + (parseFloat(parts[1]) * 60) + parseFloat(parts[2]);
+            } else if (parts.length === 2) {
+                return (parseFloat(parts[0]) * 60) + parseFloat(parts[1]);
+            }
+            return 0;
+        }
+
+        function uploadSubtitle() {
+            subtitleData = [];
+            document.getElementById('subtitle-ghost').innerHTML = "";
+            const file = document.getElementById('subUpload').files[0];
+            if (!file) return;
+            if (file.size > 500 * 1024) return alert("File too big! Subtitles are usually <100KB.");
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const textContent = e.target.result;
+                database.ref('rooms/' + roomID).update({ subtitleMode: 'text', subtitleContent: textContent, timestamp: Date.now(), secret: sessionStorage.getItem('access_token') });
+                alert("Subtitle uploaded and synced! ❤️");
+            };
+            reader.readAsText(file);
+        }
+
+        // Global flags to track notification state and debounce connections
+        let globalLastOnlineState = false;
+        let globalIsFirstLoad = true;
+        let globalHasProcessedFirstNotification = false;
+        let lastNotificationTime = 0;
+        const NOTIFICATION_DEBOUNCE = 2000; // 2 seconds minimum between notifications
+
+        function initCinemaSync() {
+            const cinemaRef = database.ref('rooms/' + roomID + '/cinema');
+
+            database.ref('rooms/' + roomID + '/lastPlayback').on('value', snap => {
+                const d = snap.val();
+                if (d && d.videoSrc) persistedMoment = d;
+            });
+
+            database.ref('rooms/' + roomID).on('value', snap => {
+                const d = snap.val(); if(!d) return;
+                
+                const partnerSymbol = (mySymbol === 'X' ? 'O' : 'X');
+                const isPartnerOnline = (d.online && d.online[partnerSymbol]);
+                
+                const rawName = (partnerSymbol === 'O' ? d.playerO : d.playerX);
+                const validName = (rawName && rawName !== "Waiting..." && rawName !== "undefined" && rawName !== null) ? rawName : null;
+                partnerName = validName || "Partner";
+                
+                const statusEl = document.getElementById('status-text');
+                if(isPartnerOnline && validName) {
+                    statusEl.innerText = `${partnerName} is Watching with you ❤️`;
+                } else {
+                    statusEl.innerText = "Waiting for connection... ✨";
+                }
+
+                // Only proceed with notifications if we have a valid partner name
+                if(validName) {
+                    // Show notifications on first load if partner is already online
+                    // This only applies to the second user (O) joining and finding first user already here
+                    if (globalIsFirstLoad && isPartnerOnline && !globalHasProcessedFirstNotification && mySymbol === 'O') {
+                        globalHasProcessedFirstNotification = true;
+                        const alertBox = document.getElementById('presence-alert');
+                        let initialMsg = `Our screen, our story... welcome home, ${myName}. 💖`;
+                        
+                        alertBox.innerText = initialMsg;
+                        alertBox.classList.add('show');
+                        setTimeout(() => alertBox.classList.remove('show'), 5000);
+                        
+                        playSound('user-joined.mp3');
+                        
+                        if(isChatHidden || document.fullscreenElement) {
+                            const fsInd = document.getElementById('fs-typing-indicator');
+                            fsInd.innerHTML = `🔔 ${initialMsg}`;
+                            fsInd.classList.add('visible');
+                            setTimeout(() => fsInd.classList.remove('visible'), 5000);
+                        }
+                        
+                        // Queue second notification for the joining user
+                        const capturedPartnerName = validName;
+                        setTimeout(() => {
+                            alertBox.innerText = `${capturedPartnerName} is already here... 💖`;
+                            alertBox.classList.remove('show');
+                            void alertBox.offsetWidth; // Trigger reflow
+                            alertBox.classList.add('show');
+                            setTimeout(() => alertBox.classList.remove('show'), 5000);
+                            
+                            playSound('user-joined.mp3');
+                            
+                            if(isChatHidden || document.fullscreenElement) {
+                                const fsInd = document.getElementById('fs-typing-indicator');
+                                fsInd.innerHTML = `🔔 ${capturedPartnerName} is already here... 💖`;
+                                fsInd.classList.add('visible');
+                                setTimeout(() => fsInd.classList.remove('visible'), 5000);
+                            }
+                        }, 5000);
+                    }
+                    
+                    const alertBox = document.getElementById('presence-alert');
+                    let showNotif = false;
+                    let msg = "";
+                    let showSecondNotif = false;
+                    let secondMsg = "";
+
+                    function showPresenceNotification(msgText, soundFile) {
+                    const alertBox = document.getElementById('presence-alert');
+                    alertBox.innerText = msgText;
+                    alertBox.classList.add('show');
+                    setTimeout(() => alertBox.classList.remove('show'), 5000);
+
+                    if (isChatHidden || document.fullscreenElement) {
+                        const fsInd = document.getElementById('fs-typing-indicator');
+                        fsInd.innerHTML = `🔔 ${msgText}`;
+                        fsInd.classList.add('visible');
+                        setTimeout(() => fsInd.classList.remove('visible'), 5000);
+                    }
+
+                    if (soundFile) playSound(soundFile);
+                }
+
+                if (isPartnerOnline) {
+                    if (!globalLastOnlineState && !globalIsFirstLoad) {
+                        // Partner just came online (not on first load)
+                        if (mySymbol === 'X') {
+                            msg = `${validName} joined the room... 💖`;
+                        } else {
+                            msg = `Our screen, our story... welcome home, ${myName}. 💖`;
+                        }
+                        if (mySymbol === 'O') {
+                            showSecondNotif = true;
+                            secondMsg = `${validName} is already here... 💖`;
+                        }
+
+                        showPresenceNotification(msg, 'user-joined.mp3');
+
+                        if (showSecondNotif) {
+                            const capturedSecondMsg = secondMsg;
+                            setTimeout(() => {
+                                showPresenceNotification(capturedSecondMsg, 'user-joined.mp3');
+                            }, 5000);
+                        }
+                    }
+                } else {
+                    if (globalLastOnlineState === true && !globalIsFirstLoad) {
+                        msg = `The room feels empty without you, ${partnerName}... come back soon. 🥀`;
+                        showPresenceNotification(msg, 'user-disconnected.mp3');
+                    }
+                }
+
+                globalLastOnlineState = !!isPartnerOnline;
+                    globalLastOnlineState = !!isPartnerOnline; 
+                }
+                
+                // Mark that we've processed the first load
+                if (globalIsFirstLoad) {
+                    globalIsFirstLoad = false;
+                }
+
+                const isEmpty = !d.videoSrc || d.videoSrc === "";
+                const isMyLoad = (mySymbol === 'X' ? d.loadingX : d.loadingO);
+                const isLoading = (isPartnerOnline) ? (d.loadingX || d.loadingO) : isMyLoad;
+
+                document.getElementById('empty-state').style.display = isEmpty ? 'flex' : 'none';
+                
+                if (isEmpty) {
+                     loader.style.display = 'none';
+                     video.style.opacity = 0;
+                } else {
+                     video.style.opacity = 1;
+                     if (isLoading) {
+                         loader.style.display = 'flex';
+                         isReadyAnimShown = false; 
+                     } else {
+                         loader.style.display = 'none';
+                         if (!isReadyAnimShown && d.videoSrc) {
+                             const readyDiv = document.getElementById('ready-state');
+                             readyDiv.style.display = 'flex';
+                             isReadyAnimShown = true;
+                             setTimeout(() => { 
+                                 readyDiv.style.display = 'none';
+                             }, 3000);
+                         }
+                     }
+                }
+            });
+
+            database.ref('rooms/' + roomID + '/videoSrc').on('value', snap => { 
+                if(snap.val()) { video.src = snap.val(); video.load(); } 
+                else { video.src = ""; subtitleData = []; } 
+            });
+
+            database.ref('rooms/' + roomID).on('value', snap => { 
+                const d = snap.val(); if(!d) return;
+                if (d.subtitleMode === 'text' && d.subtitleContent) { parseAndSetSubtitles(d.subtitleContent); } 
+                else if (d.subtitleSrc && (!d.subtitleMode || d.subtitleMode === 'url')) { if(subtitleData.length === 0) { fetch(d.subtitleSrc).then(r => r.text()).then(text => parseAndSetSubtitles(text)).catch(e => console.error(e)); } }
+            });
+
+            function parseAndSetSubtitles(text) {
+                subtitleData = []; document.getElementById('subtitle-ghost').innerHTML = ""; text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n'); const blocks = text.split(/\n\s*\n/);
+                blocks.forEach(block => {
+                    const lines = block.split('\n'); let timeLineIndex = -1;
+                    for(let i=0; i<lines.length; i++) { if(lines[i].includes('-->')) { timeLineIndex = i; break; } }
+                    if (timeLineIndex !== -1) {
+                        const times = lines[timeLineIndex].split('-->'); const start = parseTime(times[0]); const end = parseTime(times[1]); const textLines = lines.slice(timeLineIndex + 1).map(l => l.trim()).filter(l => l && isNaN(l));
+                        if (textLines.length > 0) { subtitleData.push({ start: start, end: end, text: textLines.join('<br>') }); }
+                    }
+                });
+            }
+
+            video.oncanplay = () => { 
+                clearTimeout(videoLoadingTimeout);
+                database.ref('rooms/' + roomID + '/loading' + mySymbol).once('value').then(snap => {
+                    if(snap.val() === true) {
+                database.ref('rooms/' + roomID).update({ ['loading' + mySymbol]: false, secret: sessionStorage.getItem('access_token') });
+                    }
+                });
+            };
+            
+            video.onerror = () => { 
+                clearTimeout(videoLoadingTimeout);
+                console.warn('Video load error detected');
+                // Force reset loading flags on error
+                database.ref('rooms/' + roomID).update({ 
+                    loadingX: false, 
+                    loadingO: false,
+                    secret: sessionStorage.getItem('access_token')
+                }).catch(() => {});
+                loader.style.display = 'none';
+            };
+            video.onloadedmetadata = () => { document.getElementById('durTime').innerText = formatTime(video.duration); };
+            video.addEventListener('play', () => { if(!isRemoteChange) cinemaRef.update({ state: 'play', time: video.currentTime, user: mySymbol, secret: sessionStorage.getItem('access_token') }); updatePlayButton(true); showPlaybackRipple(); persistPlaybackState(); });
+            video.addEventListener('pause', () => { if(!isRemoteChange) cinemaRef.update({ state: 'pause', time: video.currentTime, user: mySymbol, secret: sessionStorage.getItem('access_token') }); updatePlayButton(false); showPlaybackRipple(); persistPlaybackState(); });
+            
+            video.ontimeupdate = () => { 
+                if (!isRemoteChange && !isDragging) { 
+                    pBar.style.width = (video.currentTime / video.duration) * 100 + "%"; 
+                    document.getElementById('curTime').innerText = formatTime(video.currentTime); 
+                }
+                const now = Date.now();
+                if (now - lastPersistSave > 10000) { persistPlaybackState(); lastPersistSave = now; }
+
+                const nowSec = video.currentTime;
+                const activeLine = subtitleData.find(s => nowSec >= s.start && nowSec <= s.end);
+                const ghost = document.getElementById('subtitle-ghost');
+                if (activeLine) { if (ghost.innerText !== activeLine.text.replace(/<br>/g, '\n')) { ghost.innerHTML = `<span>${activeLine.text}</span>`; } } else { ghost.innerHTML = ""; }
+            };
+
+            // Listen for modalOpen state changes to sync modal across all users
+            database.ref('rooms/' + roomID + '/modalOpen').on('value', snap => {
+                const isOpen = snap.val();
+                if (isOpen === true && !romanticModalOpen) {
+                    // Show modal if it's not already shown
+                    const modal = document.getElementById('romantic-movie-modal');
+                    if(modal) {
+                        romanticModalOpen = true;
+                        modal.removeAttribute('aria-hidden');
+                        modal.style.display = 'flex';
+                    }
+                } else if (isOpen === false && romanticModalOpen) {
+                    // Hide modal if it's currently shown
+                    hideRomanticMovieOverlay();
+                }
+            });
+
+            cinemaRef.on('value', snap => {
+                if(isDragging) return; 
+                const d = snap.val(); if(!d || d.user === mySymbol) return;
+                isRemoteChange = true;
+                if(d.seekAction) triggerSeekVisual(d.seekAction);
+                if(Math.abs(video.currentTime - d.time) > 2) video.currentTime = d.time;
+                if(d.state === 'play') {
+                    video.play().catch(e => console.log("Auto-play blocked", e));
+                } else if(d.state === 'pause') {
+                    video.pause();
+                }
+                setTimeout(() => { isRemoteChange = false; }, 100);
+            });
+            database.ref('rooms/' + roomID + '/react').on('value', snap => { const d = snap.val(); if(d && d.user !== myName) { showReaction(d.emoji, d.text, d.ani, d.user); database.ref('rooms/' + roomID + '/react').set(null); } });
+        }
+
+        function formatTime(t) { if(isNaN(t) || t === Infinity) return "0:00"; let h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = Math.floor(t % 60); return h > 0 ? `${h}:${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}` : `${m}:${s < 10 ? '0' : ''}${s}`; }
+        function playSound(src) { 
+            try {
+                const audio = new Audio(src); 
+                audio.volume = 0.32;
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(err => console.log('Audio play error:', err));
+                }
+            } catch (e) {
+                console.log('Sound error:', e);
+            }
+        }
+        function togglePlay() { if(video.paused) video.play(); else video.pause(); showPlaybackRipple(); }
+        function seekManual(sec) { let newTime = video.currentTime + sec; if (newTime < 0) newTime = 0; if (newTime > video.duration) newTime = video.duration; video.currentTime = newTime; const act = sec > 0 ? 'right' : 'left'; triggerSeekVisual(act); database.ref('rooms/' + roomID + '/cinema').update({ state: video.paused ? 'pause' : 'play', time: video.currentTime, user: mySymbol, seekAction: act, seekNonce: Math.random(), secret: sessionStorage.getItem('access_token') }); }
+        function triggerSeekVisual(dir) { const el = document.getElementById('seek-' + dir); el.classList.remove('seek-animate'); void el.offsetWidth; el.classList.add('seek-animate'); }
+
+        const progArea = document.getElementById('progArea');
+        progArea.addEventListener('mousedown', (e) => { isDragging = true; updateDragUI(e); });
+        window.addEventListener('mousemove', (e) => { if(isDragging) updateDragUI(e); });
+        window.addEventListener('mouseup', (e) => { 
+            if(isDragging) { 
+                isDragging = false; 
+                const rect = progArea.getBoundingClientRect();
+                const pos = Math.min(Math.max(0, e.clientX - rect.left), rect.width);
+                const percent = pos / rect.width;
+                video.currentTime = percent * video.duration;
+                database.ref('rooms/' + roomID + '/cinema').update({ state: video.paused ? 'pause' : 'play', time: video.currentTime, user: mySymbol, secret: sessionStorage.getItem('access_token') });
+            }
+        });
+        
+        function updateDragUI(e) {
+            const rect = progArea.getBoundingClientRect();
+            let pos = e.clientX - rect.left;
+            if(pos < 0) pos = 0; if(pos > rect.width) pos = rect.width;
+            const percent = pos / rect.width;
+            pBar.style.width = (percent * 100) + "%";
+            document.getElementById('curTime').innerText = formatTime(percent * video.duration);
+        }
+
+        // --- NEW AUTO-HIDE CONTROLS & CURSOR LOGIC ---
+        const videoContainer = document.getElementById('video-container');
+        const showControls = () => {
+            videoContainer.classList.add('show-controls');
+            videoContainer.classList.remove('hide-cursor');
+            clearTimeout(controlsTimeout);
+            
+            controlsTimeout = setTimeout(() => {
+                if(!isDragging && document.activeElement.tagName !== "INPUT") {
+                    videoContainer.classList.remove('show-controls');
+                    videoContainer.classList.add('hide-cursor');
+                }
+            }, 2500);
+        };
+
+        videoContainer.addEventListener('mousemove', showControls);
+        videoContainer.addEventListener('click', showControls);
+        videoContainer.addEventListener('mouseleave', () => {
+            videoContainer.classList.remove('show-controls');
+        });
+
+        const whisperOverlay = document.getElementById('whisper-overlay');
+        whisperOverlay.addEventListener('mouseenter', () => {
+            videoContainer.classList.remove('show-controls');
+        });
+
+        window.addEventListener('keydown', (e) => { 
+            if (e.altKey && (e.key === 'w' || e.key === 'W')) { 
+                e.preventDefault();
+                toggleWhisper();
+                return;
+            }
+            if (e.key === 'Escape') {
+                const w = document.getElementById('whisper-overlay');
+                if(w.style.display === 'block') toggleWhisper();
+                return;
+            }
+            if (document.activeElement.tagName === 'INPUT') return; 
+            if (e.key === 'ArrowLeft') seekManual(-10); 
+            if (e.key === 'ArrowRight') seekManual(10); 
+            if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); togglePlay(); }
+            
+            if (e.key === 'f' || e.key === 'F') { toggleFullscreen(); }
+            
+            showControls();
+        });
+
+        // Save the current playback to Firebase when the user leaves or closes the page.
+        window.addEventListener('beforeunload', persistPlaybackState);
+        window.addEventListener('pagehide', persistPlaybackState);
+        
+        function seekVideo(e) { 
+            if(!isDragging) { 
+                const area = document.querySelector('.progress-area'), rect = area.getBoundingClientRect(); 
+                video.currentTime = ((e.clientX - rect.left) / rect.width) * video.duration; 
+                database.ref('rooms/' + roomID + '/cinema').update({ state: video.paused ? 'pause' : 'play', time: video.currentTime, user: mySymbol, secret: sessionStorage.getItem('access_token') }); 
+            } 
+        }
+        
+        function toggleFullscreen() { const w = document.getElementById('cinema-wrapper'); if (!document.fullscreenElement) w.requestFullscreen(); else document.exitFullscreen(); }
+        
+        function toggleWhisper() { 
+            const o = document.getElementById('whisper-overlay'); 
+            if(o.style.display === 'none' || o.style.display === '') {
+                o.style.display = 'block'; 
+                document.getElementById('whisperInput').focus(); 
+            } else {
+                o.style.display = 'none';
+                document.getElementById('main-video').focus(); 
+            }
+        }
+
+        function sendReaction(e, t, a) { database.ref('rooms/' + roomID + '/react').set({ user: myName, emoji: e, text: t, ani: a, secret: sessionStorage.getItem('access_token') }); showReaction(e, t, a, myName); }
+        function showReaction(e, t, a, s) { const c = document.createElement('div'); const isMe = s === myName; c.className = `reaction-popup ${isMe ? 'me-pill' : 'them-pill'}`; c.innerHTML = `<div class="sender-tag">${isMe ? 'You' : s} says...</div><div class="inner-content"><div class="reaction-emoji ${a}">${e}</div><div class="reaction-text">${t}</div></div>`; c.style.left = Math.random() * 40 + 10 + "%"; document.getElementById('cinema-wrapper').appendChild(c); setTimeout(() => c.remove(), 3500); }
+        function spawnPetals() { const c = document.getElementById('video-container'); const clr = ['#ff4d6d', '#ffafbd', '#ff1493']; for(let i=0; i<35; i++) { const p = document.createElement('div'); p.className = 'petal'; p.style.backgroundColor = clr[Math.floor(Math.random() * clr.length)]; p.style.left = Math.random() * 100 + "%"; p.style.top = "-10px"; p.style.animationDuration = (Math.random() * 3 + 3) + "s"; p.style.opacity = Math.random() * 0.7 + 0.3; p.style.width = Math.random() * 10 + 10 + "px"; p.style.height = p.style.width; c.appendChild(p); setTimeout(() => p.remove(), 6000); } }
+        function sendChatMessage(i) { 
+            const input = document.getElementById(i); 
+            if (!input.value.trim()) return; 
+            database.ref('rooms/'+roomID+'/messages').push({ sender: myName, text: input.value.trim(), time: Date.now(), secret: sessionStorage.getItem('access_token') }); 
+            input.value = ""; 
+            // Update icon visibility after clearing input
+            if (i === 'chatInput') {
+                const btn = document.getElementById('memBtnInside');
+                if (btn) {
+                    btn.style.opacity = "1";
+                    btn.style.pointerEvents = "auto";
+                }
+            }
+            if(i === 'whisperInput') document.getElementById('whisper-overlay').style.display = 'none'; 
+        }
+        let lastDisplayedDate = null;
+
+        function addDateHeaderIfNeeded(timestamp) {
+            const messagesEl = document.getElementById("chat-messages");
+            const currentDate = new Date(timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }).replace(/ (\d{4})$/, ', $1');
+            
+            if (lastDisplayedDate === currentDate) return;
+
+            const dateDiv = document.createElement('div');
+            dateDiv.className = 'date-separator';
+            dateDiv.textContent = currentDate;
+            messagesEl.appendChild(dateDiv);
+            lastDisplayedDate = currentDate;
+        }
+
+        function linkifyText(text) {
+            if (!text) return '';
+            const urlRegex = /\bhttps?:\/\/[\w\-\._~:\/?#\[\]@!$&'()*+,;=%]+/gi;
+            const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return escaped.replace(urlRegex, url => {
+                const validUrl = url.trim();
+                return `<a href="${validUrl}" target="_blank" rel="noopener noreferrer" class="chat-link">${validUrl}</a> <a href="#" class="video-link-action" data-url="${validUrl}" style="font-size:0.7rem; color: var(--heart-red); margin-left:4px;">▶ play</a>`;
+            }).replace(/\n/g, '<br>');
+        }
+
+        function listenForChat() { 
+            const listenerStartTime = Date.now();
+            database.ref('rooms/'+roomID+'/messages').on('child_added', snap => { 
+                const m = snap.val(); 
+                // Only process messages that are newer than when the listener started
+                // This prevents duplicates from the initial load
+                if (m.time < listenerStartTime) return;
+                
+                addDateHeaderIfNeeded(m.time);
+                const div = document.createElement("div");
+                const timeLabel = new Date(m.time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                
+                if(m.type === 'memory') {
+                    // Memory message bubble
+                    div.className = `msg memory-letter ${m.sender === myName ? 'me' : 'them'}`;
+                    div.onclick = () => showScrapbook(m.title, m.movie, m.images, m.savedDate);
+                    div.innerHTML = `<span class="wax-seal">💌</span>
+                        <div style="font-family:'Dancing Script', cursive; font-weight:800; color:#444; font-size:1.1rem;">A Shared Memory</div>
+                        <div style="font-size:0.75rem; color:var(--heart-red); font-weight:500;">click to view memory</div>
+                        <div class="msg-time" style="margin-top:12px; position:relative; right:0; bottom:0; text-align:right;">${timeLabel}</div>`;
+                } else {
+                    // Regular text message
+                    div.className = `msg ${m.sender === myName ? 'me' : 'them'}`; 
+                    div.innerHTML = `
+                        <div style="font-size:0.6rem; font-weight:bold; margin-bottom:4px;">${m.sender===myName?'You':m.sender}</div>
+                        <div style="margin-bottom:4px; white-space:pre-wrap;">${linkifyText(m.text)}</div>
+                        <div class="msg-time">${timeLabel}</div>
+                    `;
+                }
+
+                const messageContainer = document.getElementById("chat-messages");
+                messageContainer.appendChild(div); 
+                messageContainer.scrollTop = messageContainer.scrollHeight; 
+
+                // Add click handlers to in-bubble video links so URL click triggers player load
+                div.querySelectorAll('.video-link-action').forEach(button => {
+                    button.addEventListener('click', e => {
+                        e.preventDefault();
+                        const url = button.dataset.url;
+                        if (url) setVideoSrcByUrl(url);
+                    });
+                });
+
+                // Only play sound for NEW messages (sent AFTER we joined the room)
+                if (m.sender !== myName && m.time > initialChatLoadTime) {
+                    playSound('message-received.mp3');
+                }
+
+                if (m.sender !== myName && (Date.now() - m.time < 5000)) { 
+                    if (document.fullscreenElement || isChatHidden) { 
+                        spawnPetals(); 
+                        const popup = document.getElementById('fs-message-popup');
+                        popup.innerHTML = `💌 <b>${m.sender}:</b> ${m.type === 'memory' ? 'Shared a memory' : m.text}`;
+                        popup.classList.add('visible');
+                        setTimeout(() => popup.classList.remove('visible'), 5000);
+                    } 
+                } 
+            }); 
+        }
+        
+        let tOut; 
+        const handleTyping = () => {
+            database.ref('rooms/'+roomID+'/typing/'+mySymbol).set(true); 
+            clearTimeout(tOut); 
+            tOut = setTimeout(() => database.ref('rooms/'+roomID+'/typing/'+mySymbol).set(false), 3000); 
+        };
+        document.getElementById('chatInput').addEventListener('input', handleTyping);
+        document.getElementById('whisperInput').addEventListener('input', handleTyping);
+
+        function listenForTyping() { const opp = (mySymbol==='X'?'O':'X'); database.ref('rooms/'+roomID+'/typing/'+opp).on('value', snap => { 
+            const isTyping = snap.val();
+            const chatInd = document.getElementById('typing-indicator');
+            chatInd.innerText = isTyping ? `${partnerName} is whispering something sweet...` : ""; 
+            chatInd.style.opacity = isTyping ? "1" : "0";
+
+            const fsInd = document.getElementById('fs-typing-indicator');
+            if(fsInd) {
+                if (isTyping && (document.fullscreenElement || isChatHidden)) {
+                    fsInd.innerHTML = `<div class="spinner" style="width:15px;height:15px;border-width:2px;margin-right:5px;"></div> ${partnerName} is typing...`;
+                    fsInd.classList.add('visible');
+                } else {
+                    fsInd.classList.remove('visible');
+                }
+            }
+        }); }
+        
+        // If `url` is provided: sync it to Firebase and close the modal.
+        // If `url` is not provided: open the movie selection modal.
+        function changeMovie(url) {
+            if (typeof url === 'string' && url.trim()) {
+                setVideoSrcByUrl(url.trim());
+                hideRomanticMovieOverlay();
+                return;
+            }
+            showRomanticMovieOverlay();
+        }
+
+        // --- Romantic movie selection bridging logic ---
+        const ROMANTIC_ITEM_ID = 'vrtx_qwp_zm_99';
+        const ROMANTIC_API_URL = `https://archive.org/metadata/${ROMANTIC_ITEM_ID}`;
+        let romanticAllMovies = [];
+        let romanticModalOpen = false;
+        let previousMomentState = null;
+        let persistedMoment = null;  // loads from DB on join
+
+        function persistPlaybackState() {
+            if (!roomID || !video || !video.src) return;
+            const currentSrc = video.currentSrc || video.src;
+            if (!currentSrc) return;
+
+            const payload = {
+                videoSrc: currentSrc,
+                time: (typeof video.currentTime === 'number' && !isNaN(video.currentTime)) ? video.currentTime : 0,
+                state: video.paused ? 'pause' : 'play',
+                updatedAt: Date.now(),
+                savedBy: myName || "",
+                secret: sessionStorage.getItem('access_token')
+            };
+
+            database.ref('rooms/' + roomID + '/lastPlayback').set(payload).catch(() => {});
+        }
+
+        function saveVideoState() {
+            if (!roomID || !video || !video.src) {
+                alert('No video is currently playing!');
+                return;
+            }
+            
+            const currentSrc = video.currentSrc || video.src;
+            if (!currentSrc) {
+                alert('No video source found!');
+                return;
+            }
+
+            const payload = {
+                videoSrc: currentSrc,
+                timestamp: (typeof video.currentTime === 'number' && !isNaN(video.currentTime)) ? video.currentTime : 0,
+                savedAt: Date.now(),
+                savedBy: myName || "Anonymous",
+                secret: sessionStorage.getItem('access_token')
+            };
+
+            // Save to database, discarding any previous save
+            database.ref('rooms/' + roomID + '/savedVideoState').set(payload).then(() => {
+                // Show feedback (smooth transition and requested velvet berry style)
+                const notification = document.createElement('div');
+                notification.className = 'save-state-notif';
+                notification.textContent = `💾 Saved! Ready to continue at ${video.currentTime.toFixed(1)}s`;
+                const container = document.getElementById('video-container') || document.body;
+                container.appendChild(notification);
+
+                // force reflow so transition from 0 to visible works
+                void notification.offsetWidth;
+                notification.classList.add('visible');
+
+                setTimeout(() => notification.classList.remove('visible'), 2500);
+                setTimeout(() => notification.remove(), 3000);
+            }).catch((err) => {
+                alert('Failed to save: ' + (err.message || 'Unknown error'));
+            });
+        }
+
+        function getValidatedVideoUrl(url) {
+            if (!url || typeof url !== 'string') return null;
+            let cleaned = url.trim();
+            if (!/^https?:\/\//i.test(cleaned)) {
+                return null;
+            }
+            // Accept .mp4 and stream-friendly links; remove accidental surrounding punctuation
+            cleaned = cleaned.replace(/[\s<>"']+/g, '');
+            return cleaned;
+        }
+
+        function setVideoSrcByUrl(url) {
+            const validatedUrl = getValidatedVideoUrl(url);
+            if (!validatedUrl) {
+                console.warn('Invalid video URL passed:', url);
+                alert('Invalid video URL. Please check and try again.');
+                return;
+            }
+            subtitleData = [];
+            document.getElementById('subtitle-ghost').innerHTML = "";
+            isReadyAnimShown = false;
+            clearTimeout(videoLoadingTimeout);
+            database.ref('rooms/' + roomID).update({
+                videoSrc: validatedUrl,
+                subtitleSrc: "",
+                subtitleContent: "",
+                subtitleMode: "url",
+                loadingX: true,
+                loadingO: true,
+                secret: sessionStorage.getItem('access_token')
+            });
+            // persist selected video immediately
+            database.ref('rooms/' + roomID + '/lastPlayback').set({
+                videoSrc: validatedUrl,
+                time: 0,
+                state: 'pause',
+                updatedAt: Date.now(),
+                savedBy: myName || "",
+                secret: sessionStorage.getItem('access_token')
+            }).catch(() => {});
+            
+            // Set timeout to force hide loader if video doesn't load within time limit
+            clearTimeout(videoLoadingTimeout);
+            videoLoadingTimeout = setTimeout(() => {
+                console.warn('Video loading timeout - forcing reset');
+                database.ref('rooms/' + roomID).update({ loadingX: false, loadingO: false, secret: sessionStorage.getItem('access_token') }).catch(() => {});
+                videoLoadingTimeout = null;
+            }, VIDEO_LOAD_TIMEOUT);
+        }
+
+        function continueOurMoment() {
+            // Debounce rapid clicks
+            const now = Date.now();
+            if (now - lastMovieSelectionTime < VIDEO_SELECTION_DEBOUNCE) return;
+            lastMovieSelectionTime = now;
+            
+            // First check for savedVideoState, otherwise use persistedMoment or previousMomentState
+            database.ref('rooms/' + roomID + '/savedVideoState').once('value').then(savedSnap => {
+                let restore = null;
+                
+                if(savedSnap.exists()) {
+                    restore = savedSnap.val();
+                } else {
+                    restore = persistedMoment || previousMomentState;
+                }
+                
+                database.ref('rooms/' + roomID).update({ modalOpen: false, secret: sessionStorage.getItem('access_token') });
+                hideRomanticMovieOverlay();
+
+                if(!restore || !restore.videoSrc) {
+                    console.warn('No saved moment to restore');
+                    return;
+                }
+
+                const doRestore = () => {
+                    // Seek to the saved timestamp
+                    const seekTime = restore.timestamp || restore.time || 0;
+                    if (typeof seekTime === 'number' && isFinite(seekTime)) {
+                        try { video.currentTime = seekTime; } catch (e) {}
+                    }
+
+                    if(restore.state === 'play') {
+                        video.play().catch(() => {});
+                    } else {
+                        video.pause();
+                    }
+
+                    database.ref('rooms/' + roomID + '/cinema').update({
+                        state: restore.state || 'pause',
+                        time: seekTime,
+                        user: mySymbol,
+                        secret: sessionStorage.getItem('access_token')
+                    });
+
+                    persistPlaybackState();
+                };
+
+                const currentSrc = video.currentSrc || video.src || "";
+                
+                // If video source is different, we need to load it first
+                if(!currentSrc || currentSrc !== restore.videoSrc) {
+                    clearTimeout(videoLoadingTimeout);
+                    setVideoSrcByUrl(restore.videoSrc);
+                    
+                    let canplayFired = false;
+                    const handleCanplay = () => {
+                        if (!canplayFired) {
+                            canplayFired = true;
+                            clearTimeout(videoLoadingTimeout);
+                            video.removeEventListener('canplay', handleCanplay);
+                            doRestore();
+                        }
+                    };
+                    
+                    // Listen for canplay event
+                    video.addEventListener('canplay', handleCanplay);
+                    
+                    // Fallback timeout - if video doesn't load within 5 seconds, restore anyway
+                    videoLoadingTimeout = setTimeout(() => {
+                        if (!canplayFired) {
+                            canplayFired = true;
+                            video.removeEventListener('canplay', handleCanplay);
+                            console.warn('Continue moment: canplay timeout, proceeding anyway');
+                            doRestore();
+                        }
+                    }, 5000);
+                } else {
+                    // Video already loaded, just restore state
+                    if(video.readyState >= 2) {
+                        doRestore();
+                    } else {
+                        let canplayFired = false;
+                        const handleCanplay = () => {
+                            if (!canplayFired) {
+                                canplayFired = true;
+                                video.removeEventListener('canplay', handleCanplay);
+                                doRestore();
+                            }
+                        };
+                        video.addEventListener('canplay', handleCanplay);
+                        
+                        // Fallback timeout
+                        videoLoadingTimeout = setTimeout(() => {
+                            if (!canplayFired) {
+                                canplayFired = true;
+                                video.removeEventListener('canplay', handleCanplay);
+                                doRestore();
+                            }
+                        }, 2000);
+                    }
+                }
+            }).catch(err => {
+                console.error('Continue moment query failed:', err);
+                // Fallback if database query fails
+                const restore = persistedMoment || previousMomentState;
+                database.ref('rooms/' + roomID).update({ modalOpen: false, secret: sessionStorage.getItem('access_token') });
+                hideRomanticMovieOverlay();
+
+                if(!restore || !restore.videoSrc) {
+                    console.warn('No fallback moment available');
+                    return;
+                }
+
+                const doRestore = () => {
+                    const seekTime = restore.time || 0;
+                    if (typeof seekTime === 'number' && isFinite(seekTime)) {
+                        try { video.currentTime = seekTime; } catch (e) {}
+                    }
+
+                    if(restore.state === 'play') {
+                        video.play().catch(() => {});
+                    } else {
+                        video.pause();
+                    }
+
+                    database.ref('rooms/' + roomID + '/cinema').update({
+                        state: restore.state,
+                        time: seekTime,
+                        user: mySymbol,
+                        secret: sessionStorage.getItem('access_token')
+                    });
+
+                    persistPlaybackState();
+                };
+
+                const currentSrc = video.currentSrc || video.src || "";
+                if(!currentSrc || currentSrc !== restore.videoSrc) {
+                    setVideoSrcByUrl(restore.videoSrc);
+                    let canplayFired = false;
+                    const handleCanplay = () => {
+                        if (!canplayFired) {
+                            canplayFired = true;
+                            clearTimeout(videoLoadingTimeout);
+                            video.removeEventListener('canplay', handleCanplay);
+                            doRestore();
+                        }
+                    };
+                    video.addEventListener('canplay', handleCanplay);
+                    videoLoadingTimeout = setTimeout(() => {
+                        if (!canplayFired) {
+                            canplayFired = true;
+                            video.removeEventListener('canplay', handleCanplay);
+                            doRestore();
+                        }
+                    }, 3000);
+                } else {
+                    if(video.readyState >= 2) {
+                        doRestore();
+                    } else {
+                        let canplayFired = false;
+                        const handleCanplay = () => {
+                            if (!canplayFired) {
+                                canplayFired = true;
+                                video.removeEventListener('canplay', handleCanplay);
+                                doRestore();
+                            }
+                        };
+                        video.addEventListener('canplay', handleCanplay);
+                    }
+                }
+            });
+        }
+
+        function showRomanticMovieOverlay() {
+            const modal = document.getElementById('romantic-movie-modal');
+            if(!modal || romanticModalOpen) return;
+
+            romanticModalOpen = true;
+            modal.removeAttribute('aria-hidden');
+            modal.style.display = 'flex';
+            
+            // Sync modalOpen to true across all users
+            database.ref('rooms/' + roomID).update({ modalOpen: true, secret: sessionStorage.getItem('access_token') });
+
+            // Remember the exact playback state before opening the overlay.
+            previousMomentState = {
+                videoSrc: (video.currentSrc || video.src || ""),
+                time: (typeof video.currentTime === 'number' && isFinite(video.currentTime)) ? video.currentTime : 0,
+                state: video.paused ? 'pause' : 'play'
+            };
+
+            const loadingSection = document.getElementById('loading-section');
+            const searchWrapper = document.getElementById('search-wrapper');
+            const movieList = document.getElementById('movie-list');
+            const statusEl = document.getElementById('romantic-search-status');
+            const privateArea = document.getElementById('private-link-area');
+            const privateInput = document.getElementById('private-link-input');
+            const privatePlayBtn = document.getElementById('private-link-play-btn');
+            if (privateArea) privateArea.style.display = 'none';
+            if (privateInput) privateInput.value = '';
+            if (privatePlayBtn) privatePlayBtn.style.display = 'none';
+
+            statusEl.innerText = "Searching for our movies...";
+            loadingSection.style.display = 'block';
+            searchWrapper.style.display = 'none';
+            movieList.style.display = 'none';
+            movieList.innerHTML = "";
+
+            // Ensure the "Play" button appears only after a URL is pasted.
+            if (privateInput && !privateInput.dataset._romanticListenerAttached) {
+                privateInput.dataset._romanticListenerAttached = '1';
+                privateInput.addEventListener('input', () => {
+                    if(!privatePlayBtn) return;
+                    const hasUrl = (privateInput.value || '').trim().length > 0;
+                    privatePlayBtn.style.display = hasUrl ? 'inline-flex' : 'none';
+                });
+            }
+
+            const startedAt = Date.now();
+            fetch(ROMANTIC_API_URL)
+                .then(r => r.json())
+                .then(data => {
+                    romanticAllMovies = (data.files || [])
+                        .filter(f => f.name && f.name.toLowerCase().endsWith('.mp4') && f.source === 'original')
+                        .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+
+                    const elapsed = Date.now() - startedAt;
+                    const minScanMs = 2500;
+                    const remaining = Math.max(0, minScanMs - elapsed);
+
+                    setTimeout(() => {
+                        if(!romanticModalOpen) return;
+                        loadingSection.style.display = 'none';
+                        searchWrapper.style.display = 'block';
+                        movieList.style.display = 'block';
+                        renderRomanticMovies(romanticAllMovies);
+                    }, remaining);
+                })
+                .catch(() => {
+                    const elapsed = Date.now() - startedAt;
+                    const minScanMs = 2500;
+                    const remaining = Math.max(0, minScanMs - elapsed);
+
+                    setTimeout(() => {
+                        if(!romanticModalOpen) return;
+                        document.getElementById('romantic-search-status').innerText = "Connection lost. Using default list...";
+                        romanticAllMovies = [
+                            { name: 'Moonlit Poetry (Sample).mp4' },
+                            { name: 'Cupid&#x27;s Whispers (Sample).mp4' },
+                            { name: 'Starlight Cinema (Sample).mp4' }
+                        ];
+                        loadingSection.style.display = 'none';
+                        searchWrapper.style.display = 'block';
+                        movieList.style.display = 'block';
+                        renderRomanticMovies(romanticAllMovies);
+                    }, remaining);
+                });
+        }
+
+        function hideRomanticMovieOverlay() {
+            const modal = document.getElementById('romantic-movie-modal');
+            if(!modal) return;
+            romanticModalOpen = false;
+            modal.style.display = 'none';
+            modal.setAttribute('aria-hidden', 'true');
+
+            const privateArea = document.getElementById('private-link-area');
+            if (privateArea) privateArea.style.display = 'none';
+        }
+
+        function closeRomanticMovieModal() {
+            hideRomanticMovieOverlay();
+        }
+
+        function togglePrivateLinkArea() {
+            const area = document.getElementById('private-link-area');
+            const movieList = document.getElementById('movie-list');
+            if(!area) return;
+            const shouldShow = (area.style.display === 'none' || area.style.display === '');
+            area.style.display = shouldShow ? 'block' : 'none';
+            if (shouldShow) {
+                if (movieList) movieList.style.display = 'none';
+                const input = document.getElementById('private-link-input');
+                if (input) setTimeout(() => input.focus(), 0);
+                const playBtn = document.getElementById('private-link-play-btn');
+                if (playBtn) {
+                    const hasUrl = (input && (input.value || '').trim().length > 0);
+                    playBtn.style.display = hasUrl ? 'inline-flex' : 'none';
+                }
+            } else {
+                // Return to the movie list view.
+                if (movieList) movieList.style.display = 'block';
+            }
+        }
+
+        function renderRomanticMovies(list) {
+            const container = document.getElementById('movie-list');
+            container.innerHTML = "";
+
+            if(list.length === 0) {
+                container.innerHTML = `<div class="romantic-movie-card" style="justify-content:center;">No movies found.</div>`;
+                return;
+            }
+
+            list.forEach((m, i) => {
+                const card = document.createElement('div');
+                card.className = 'romantic-movie-card';
+                card.style.animationDelay = `${i * 0.05}s`;
+
+                const url = `https://archive.org/download/${ROMANTIC_ITEM_ID}/${encodeURIComponent(m.name)}`;
+                card.dataset.videoUrl = url;
+
+                card.innerHTML = `
+                    <div class="romantic-movie-icon">🎞️</div>
+                    <div class="romantic-movie-title">${m.name}</div>
+                `;
+
+                card.addEventListener('click', () => {
+                    // Debounce clicks
+                    const now = Date.now();
+                    if (now - lastMovieSelectionTime < VIDEO_SELECTION_DEBOUNCE) return;
+                    lastMovieSelectionTime = now;
+                    
+                    const chosenUrl = card.dataset.videoUrl;
+                    if(chosenUrl) {
+                        database.ref('rooms/' + roomID).update({ modalOpen: false, secret: sessionStorage.getItem('access_token') });
+                        setVideoSrcByUrl(chosenUrl);
+                    }
+                    hideRomanticMovieOverlay();
+                });
+
+                container.appendChild(card);
+            });
+        }
+
+        function filterRomanticMovies() {
+            const q = (document.getElementById('movie-search').value || '').toLowerCase();
+            const filtered = romanticAllMovies.filter(m => m.name.toLowerCase().includes(q));
+            renderRomanticMovies(filtered);
+        }
+
+        function playPrivateLinkMovie(url) {
+            // Debounce clicks
+            const now = Date.now();
+            if (now - lastMovieSelectionTime < VIDEO_SELECTION_DEBOUNCE) return;
+            lastMovieSelectionTime = now;
+            
+            const validUrl = getValidatedVideoUrl(url);
+            if (!validUrl) {
+                alert('Please enter a valid https:// URL for the video file.');
+                return;
+            }
+            database.ref('rooms/' + roomID).update({ modalOpen: false, secret: sessionStorage.getItem('access_token') });
+            setVideoSrcByUrl(validUrl);
+            hideRomanticMovieOverlay();
+        }
+
+        function updatePlayButton(isPlaying) {
+            const pauseSVG = '<svg height="512" viewBox="0 0 32 32" width="512" xmlns="http://www.w3.org/2000/svg"><g id="a98320b4-c804-49e8-bb64-e76768f68178" data-name="Layer 30"><path d="m13 5v22a3 3 0 0 1 -3 3h-1a3 3 0 0 1 -3-3v-22a3 3 0 0 1 3-3h1a3 3 0 0 1 3 3zm10-3h-1a3 3 0 0 0 -3 3v22a3 3 0 0 0 3 3h1a3 3 0 0 0 3-3v-22a3 3 0 0 0 -3-3z"/></g></svg>';
+            const playSVG = '<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="163.861px" height="163.861px" viewBox="0 0 163.861 163.861" style="enable-background:new 0 0 163.861 163.861;" xml:space="preserve"><g><path d="M34.857,3.613C20.084-4.861,8.107,2.081,8.107,19.106v125.637c0,17.042,11.977,23.975,26.75,15.509L144.67,97.275 c14.778-8.477,14.778-22.211,0-30.686L34.857,3.613z"/></g></svg>';
+            playBtn.innerHTML = isPlaying ? pauseSVG : playSVG;
+        }
+
+        function showPlaybackRipple() {
+            const ripple = document.getElementById('playback-ripple');
+            const currentIcon = playBtn.querySelector('svg');
+            if (currentIcon) {
+                const clonedIcon = currentIcon.cloneNode(true);
+                ripple.innerHTML = '';
+                ripple.appendChild(clonedIcon);
+                ripple.classList.add('active');
+                setTimeout(() => {
+                    ripple.classList.remove('active');
+                }, 700);
+            }
+        }
+
+        spawnHearts();
+        // Initialize play button with play icon
+        setTimeout(() => { updatePlayButton(false); }, 100);
+
+        /* MEMORY FEATURE FUNCTIONS (from shared-memory.html) */
+        let heartInterval;
+
+        function zoomPreview(src) {
+            const overlay = document.getElementById('zoom-overlay');
+            const img = document.getElementById('zoom-img');
+            img.src = src; overlay.style.display = 'flex';
+        }
+        function closeZoom() { document.getElementById('zoom-overlay').style.display = 'none'; }
+
+        /* COLLAB LOGIC */
+        function requestMemoryModal() { database.ref('rooms/'+roomID+'/memoryDraft').update({ isOpen: true, secret: sessionStorage.getItem('access_token') }); }
+        function requestCloseMemoryModal() { database.ref('rooms/'+roomID+'/memoryDraft').set(null); }
+        function syncDraftText(field, value) { database.ref('rooms/'+roomID+'/memoryDraft').update({ [field]: value, secret: sessionStorage.getItem('access_token') }); }
+
+        function listenForDraft() {
+            const ref = database.ref('rooms/'+roomID+'/memoryDraft');
+            ref.on('value', snap => {
+                const data = snap.val() || {};
+                document.getElementById('memory-modal').style.display = data.isOpen ? 'flex' : 'none';
+                if(data.isOpen) {
+                    const mov = document.getElementById('memMovieTitle'), tit = document.getElementById('memGeneralTitle');
+                    if(document.activeElement !== mov) mov.value = data.movie || "";
+                    if(document.activeElement !== tit) tit.value = data.title || "";
+                }
+            });
+            ref.child('photos').on('value', snap => {
+                const photos = snap.val() || {};
+                const list = document.getElementById('preview-list');
+                Object.entries(photos).forEach(([key, p]) => {
+                    let item = document.getElementById('item-' + key);
+                    if(!item) {
+                        item = document.createElement('div'); item.className = 'preview-item'; item.id = 'item-' + key;
+                        item.innerHTML = `${p.sender === myName ? `<div class="del-photo" onclick="removeDraftPhoto('${key}')">×</div>` : ''}
+                            <img src="${p.src}" onclick="zoomPreview('${p.src}')">
+                            <textarea id="txt-${key}" placeholder="${p.sender}'s caption..." ${p.sender !== myName ? 'disabled' : ''} oninput="updateDraftCaption('${key}', this.value)" onfocus="this.style.borderColor='var(--heart-red)'; this.style.boxShadow='0 0 12px rgba(255, 77, 109, 0.45)'" onblur="this.style.borderColor='var(--primary-pink)'; this.style.boxShadow='none'" style="flex:1; height:60px; padding:8px; border-radius:8px; border:2px solid var(--primary-pink); transition: 0.3s;">${p.caption || ""}</textarea>`;
+                        list.appendChild(item);
+                    } else {
+                        const tx = document.getElementById('txt-' + key);
+                        if(document.activeElement !== tx) tx.value = p.caption || "";
+                    }
+                });
+                Array.from(list.children).forEach(c => { if(!photos[c.id.replace('item-','')]) c.remove(); });
+            });
+        }
+
+        function handleImages(files) {
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image(); img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const max = 600; let w = img.width, h = img.height;
+                        if(w > max) { h *= max/w; w = max; }
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0,0,w,h);
+                        database.ref('rooms/'+roomID+'/memoryDraft/photos').push({ src: canvas.toDataURL('image/jpeg', 0.5), caption: "", sender: myName, secret: sessionStorage.getItem('access_token') });
+                    };
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateDraftCaption(key, val) { database.ref('rooms/'+roomID+'/memoryDraft/photos/'+key).update({ caption: val, secret: sessionStorage.getItem('access_token') }); }
+        function removeDraftPhoto(key) { database.ref('rooms/'+roomID+'/memoryDraft/photos/'+key).set(null); }
+
+        function uploadMemory() {
+            const movie = document.getElementById('memMovieTitle').value;
+            const title = document.getElementById('memGeneralTitle').value;
+            const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+            
+            database.ref('rooms/'+roomID+'/memoryDraft/photos').once('value', s => {
+                const p = Object.values(s.val() || {});
+                if(!movie || !title || p.length === 0) return alert("Fill everything ❤️");
+                database.ref('rooms/'+roomID+'/messages').push({ 
+                    sender: myName, type: 'memory', title: title, movie: movie, images: p, time: Date.now(), savedDate: dateStr, secret: sessionStorage.getItem('access_token')
+                });
+                requestCloseMemoryModal();
+            });
+        }
+
+        /* SCRAPBOOK DISPLAY */
+        function showScrapbook(title, movie, images, date) {
+            document.getElementById('viewTitle').innerText = title;
+            document.getElementById('viewMovieInfo').innerText = "We watched " + movie + " together ❤️";
+            document.getElementById('viewDateInfo').innerText = "On " + (date || "Our special day");
+            const gallery = document.getElementById('viewGallery'); gallery.innerHTML = '';
+            images.forEach(img => {
+                const pol = document.createElement('div'); pol.className = 'polaroid';
+                pol.innerHTML = `<img src="${img.src}"><div class="polaroid-caption">${img.caption || ""}</div>`;
+                gallery.appendChild(pol);
+            });
+            document.getElementById('scrapbook-view').style.display = 'flex';
+            startHearts();
+        }
+        
+        function spawnHeart() {
+            const container = document.getElementById('scrapbook-heart-container');
+            if(!container) return;
+            const h = document.createElement('div'); h.className = 'scrapbook-heart';
+            h.innerHTML = ['💗','❤️','💖'][Math.floor(Math.random()*3)];
+            h.style.left = Math.random() * 100 + 'vw';
+            const dur = Math.random() * 2 + 5; h.style.animationDuration = dur + 's';
+            container.appendChild(h); setTimeout(() => h.remove(), dur * 1000);
+        }
+        function startHearts() { spawnHeart(); heartInterval = setInterval(spawnHeart, 500); }
+        function closeScrapbook() { document.getElementById('scrapbook-view').style.display = 'none'; clearInterval(heartInterval); document.getElementById('scrapbook-heart-container').innerHTML = ''; }
+
+        function setupInputVisibility() {
+            const input = document.getElementById('chatInput');
+            const btn = document.getElementById('memBtnInside');
+            
+            if (!input || !btn) {
+                // Retry after a short delay if elements not found
+                setTimeout(setupInputVisibility, 100);
+                return;
+            }
+            
+            // Set initial state - icon should be visible when input is empty
+            const updateIconVisibility = () => {
+                const isEmpty = input.value.trim().length === 0;
+                btn.style.opacity = isEmpty ? "1" : "0";
+                btn.style.pointerEvents = isEmpty ? "auto" : "none";
+            };
+            
+            // Set initial state
+            updateIconVisibility();
+            
+            input.addEventListener('input', updateIconVisibility);
+            
+            // Also listen for focus/blur events to ensure visibility
+            input.addEventListener('focus', updateIconVisibility);
+            input.addEventListener('blur', updateIconVisibility);
+        }
+    </script>
+</body>
+</html>
